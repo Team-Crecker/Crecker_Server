@@ -48,7 +48,7 @@ router.get("/category/:flag", async (req, res) => {
         selectNewsQuery = 'SELECT * FROM News WHERE category = 3 ORDER BY calendarStart ASC';
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
-    if (!insertNewsResult)
+    if (!selectNewsResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공
@@ -57,8 +57,8 @@ router.get("/category/:flag", async (req, res) => {
 
 
 router.post("/", upload.single('poster'), async (req, res) => {
-    const insertNewsQuery = 'INSERT INTO News (poster, host, title, contents, calendarStart, calendarEnd ,createAt) VALUES (?,?,?,?,?)';
-    const insertNewsResult = await db.queryParam_Arr(insertNewsQuery, [req.file.location, req.body.host, req.body.title, req.body.contents ,moment().format('YYYY-MM-DD HH:mm:ss') ])
+    const insertNewsQuery = 'INSERT INTO News (poster, category ,host, title, contents, calendarStart, calendarEnd ,createAt) VALUES (?,?,?,?,?,?,?,?)';
+    const insertNewsResult = await db.queryParam_Arr(insertNewsQuery, [req.file.location, req.body.category ,req.body.host, req.body.title, req.body.contents, req.body.calendarStart, req.body.calendarEnd ,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertNewsResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
