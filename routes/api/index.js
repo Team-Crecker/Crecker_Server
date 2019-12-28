@@ -5,5 +5,7 @@ const router = express.Router();
 router.use("/auth", require("./auth/index"));
 router.use('/expert', require('./expert/index'));
 router.use('/news', require('./news'))
-router.use('/mypage', require('.mypage/'))
+router.use('/report', require('./report/index'))
+router.use('/mypage', require('./mypage/index'))
+
 module.exports = router;
