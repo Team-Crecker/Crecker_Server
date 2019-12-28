@@ -6,6 +6,7 @@ router.use("/auth", require("./auth/index"));
 router.use('/expert', require('./expert/index'));
 router.use('/news', require('./news'))
 router.use('/report', require('./report/index'))
-router.use('/mypage', require('./mypage/index'))
+router.use('/cash', require('./cash/index'))
+router.use('/user', require('./user/index'))
 
 module.exports = router;
