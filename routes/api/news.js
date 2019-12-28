@@ -25,8 +25,25 @@ DB 오류 뜰 때
     2. 라우팅 제대로 되었는지 확인하기
 */
 
+router.get("/:flag", async (req, res) => {
+    let selectNewsQuery;
+    if (req.params.flag == 0) //인기 지원 활동
+        selectNewsQuery = 'SELECT * FROM News ORDER BY views DESC';
+    else if (req.params.flag == 1) //최신 지원 활동
+        selectNewsQuery = 'SELECT * FROM News ORDER BY calendarStart ASC';
+    
+    const selectNewsResult = await db.queryParam_None(insertNewsQuery)
+
+    if (!insertNewsResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
+    
+});
+
+
 router.post("/", upload.single('poster'), async (req, res) => {
-    const insertNewsQuery = 'INSERT INTO News (poster, host, title, contents, createAt) VALUES (?,?,?,?,?)';
+    const insertNewsQuery = 'INSERT INTO News (poster, host, title, contents, calendarStart, calendarEnd ,createAt) VALUES (?,?,?,?,?)';
     const insertNewsResult = await db.queryParam_Arr(insertNewsQuery, [req.file.location, req.body.host, req.body.title, req.body.contents ,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertNewsResult)
