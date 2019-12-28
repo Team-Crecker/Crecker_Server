@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
     const agreement = req.body.agreement;
     const hashcode = "dhdhdhdhd";
     const isAuth = 0
-    const selectIdQuery = 'SELECT * FROM User WHERE email = ?'
+    const selectIdQuery = 'SEL고ECT * FROM User WHERE email = ?'
     const selectIdResult = await db.queryParam_Parse(selectIdQuery, email);
     const signupQuery = 'INSERT INTO User (email, password, phone, location, name, channelName, youtubeUrl, agreement, hashcode, salt, isAuth) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
