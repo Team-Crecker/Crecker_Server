@@ -18,9 +18,10 @@ router.post('/', async (req, res) => {
     const channelName = req.body.channelName;
     const youtubeUrl = req.body.youtubeUrl;
     const agreement = req.body.agreement;
+    const interest = req.body.interest;
     const hashcode = "dhdhdhdhd";
     const isAuth = 0
-    const selectIdQuery = 'SEL고ECT * FROM User WHERE email = ?'
+    const selectIdQuery = 'SELECT * FROM User WHERE email = ?'
     const selectIdResult = await db.queryParam_Parse(selectIdQuery, email);
     const signupQuery = 'INSERT INTO User (email, password, phone, location, name, channelName, youtubeUrl, agreement, hashcode, salt, isAuth) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
@@ -28,14 +29,19 @@ router.post('/', async (req, res) => {
         console.log("일치 없음");
         const buf = await crypto.randomBytes(64);
         const salt = buf.toString('base64');
-        console.log(password)
-        console.log(salt)
         const hashedPw = await crypto.pbkdf2(password, salt, 1000, 32, 'SHA512')
-        console.log(hashedPw.toString('base64'));
-        // L4yDuTMTII0hiJZzywFx0tKlPVh6tsz/yAaJokQ0IqM=
         const signupResult = await db.queryParam_Arr(signupQuery, [email, hashedPw.toString('base64'), phone, location, name,
-            channelName, youtubeUrl, agreement, hashcode, salt, isAuth]);
+            channelName, youtubeUrl, agreement, hashcode, salt, isAuth
+        ]);
         userIdx = signupResult['insertId']
+
+        for (var code of interest) {
+            const UserInterestQuery = 'INSERT INTO UserInterest (userIdx, categoryCodeIdx) VALUES (?, ?)';
+            const categoryIdxQuery = 'SELECT categoryCodeIdx FROM CategoryCode WHERE categoryCode=?'
+            const categoryIdxResult = await db.queryParam_Arr(categoryIdxQuery, [code]);
+            categoryCodeIdx = categoryIdxResult[0].categoryCodeIdx
+            const UserInterestResult = await db.queryParam_Arr(UserInterestQuery, [userIdx, categoryCodeIdx]);
+        }
 
         if (!signupResult) {
             res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.SIGNUP_FAIL));
