@@ -39,7 +39,7 @@ router.get("/question/:flag", async (req, res) => {
     if (!selectLawResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "법류 문의 조회 성공", selectLawResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 문의 조회 성공", selectLawResult));    // 작품 삭제 성공
     
     
 
@@ -60,13 +60,14 @@ router.post("/question", async (req, res) => {
 // 답변 등록은 Postman으로 직접 등록
 router.post("/answer", async (req, res) => {
     const insertLawQuery = 'INSERT INTO Answer (title, category ,contents, privateYN, createAt) VALUES (?, 1,?,?,?)';
-    const updateLawQuery = 'UPDATE Question SET answerYN = 1 WHERE'; // 답변 완료
+    const updateLawQuery = `UPDATE Question SET answerYN = 1 WHERE questionIdx=${req.body.questionIdx}`; // 답변 완료
 //sql문이나 DB 물어보기
     
     const insertTransaction = await db.Transaction( async (connection) => {
 
         const insertLawResult = await connection.query(insertLawQuery, [req.body.title, req.body.contents, req.body.privateYN, moment().format('YYYY-MM-DD HH:mm:ss') ])
         const updateLawResult = await connection.query(updateLawQuery);
+        //트랜잭션 쿼리 질문하기
 
     }
     );
@@ -87,8 +88,6 @@ router.post("/consult", async (req, res) => {
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "법류 상담 입력 성공"));    // 작품 삭제 성공
     
-    
-
 });
 
 module.exports = router;

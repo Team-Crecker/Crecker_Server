@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
     if (!selectExpertResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "필독사항 조회 성공", selectLawResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "전문가 전체 조회 성공", selectExpertResult));    // 작품 삭제 성공
 })
 
 router.get('/notice', async (req, res) => {
@@ -29,7 +29,7 @@ router.get('/notice', async (req, res) => {
         if (!selectExpertResult)
             res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
         else
-            res.status(200).send(defaultRes.successTrue(statusCode.OK, "필독사항 조회 성공", selectLawResult));    // 작품 삭제 성공
+            res.status(200).send(defaultRes.successTrue(statusCode.OK, "필독사항 조회 성공", selectExpertResult));    // 작품 삭제 성공
         
         
 })
