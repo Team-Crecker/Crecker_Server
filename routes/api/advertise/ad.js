@@ -8,6 +8,7 @@ var moment = require('moment');
 const defaultRes = require('../../../module/utils/utils');
 const statusCode = require('../../../module/utils/statusCode');
 const resMessage = require('../../../module/utils/responseMessage');
+const authUtils = require('../../../module/utils/authUtils');
 const db = require('../../../module/pool');
 
 
@@ -18,12 +19,12 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
     console.log(req.body);
     const insertAdQuery ="INSERT INTO Ad "
     + "(thumbnail,title,subtitle,cash,applyFrom,applyTo,choice,uploadFrom,uploadTo,completeDate,"
-    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,category) "
-    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,category,views,createAt) "
+    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     const insertAdResult = await  db.queryParam_Parse(insertAdQuery,[req.files[0].location, req.body.title, req.body.subtitle, req.body.cash, 
         req.body.applyFrom, req.body.applyTo, req.body.choice, req.body.uploadFrom, req.body.uploadTo, req.body.completeDate,
     req.files[1].location, req.files[2].location, req.body.preference, req.body.campaignInfo, req.body.url, 
-    req.body.reward, req.body.keyword, req.body.campaignMission, req.body.addInfo,req.body.category]);
+    req.body.reward, req.body.keyword, req.body.campaignMission, req.body.addInfo,req.body.category,req.body.views,moment().format('YYYY-MM-DD HH:mm:ss')]);
     
     if (!insertAdResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
@@ -116,7 +117,7 @@ router.get('/list/:flag',async (req,res) => {
 //광고 최신순 with d-day
 router.get('/latest',async (req,res) => {
 
-    const getLatestQuery = 'SELECT thumbnail, title, cash FROM Ad ORDER BY uploadFrom DESC'
+    const getLatestQuery = 'SELECT thumbnail, title, cash FROM Ad ORDER BY createAt DESC'
     const getLatestResult = await db.queryParam_None(getLatestQuery);
     
    
@@ -127,13 +128,13 @@ router.get('/latest',async (req,res) => {
     }
 });
 
-//광고 인기순 ?
-router.get('/popular/:idx',async(req,res) => {
+//광고 인기순
+router.get('/popular',async(req,res) => {
 
     
 
-    const getPopularQuery = 'SELECT thumbnail, title, cash FROM Ad WHERE ORDER BY views DESC'
-    const getPopularResult = await db.queryParam_Parse(getPopularQuery,[req.params.ad_idx]);
+    const getPopularQuery = 'SELECT thumbnail, title, cash FROM Ad ORDER BY views DESC'
+    const getPopularResult = await db.queryParam_None(getPopularQuery);
 
     if (!getPopularResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
@@ -144,21 +145,33 @@ router.get('/popular/:idx',async(req,res) => {
 });
 
 
-//광고 맞춤형?
-router.get('/likes',async(req,res) => {
-   
-    const getLikesQuery = 'SELECT thumbnail, title, cash FROM Ad ORDER BY views From DESC'
-    const getLikesResult = await db.queryParam_None(getLikesQuery);
+// //광고 맞춤형? 
+// router.get('/interest',async(req,res) => {
+    
+//     const getInterestQuery = 'SELECT categoryCodeIdx FROM User JOIN UserInterest ON User.userIdx = UserInterest.userIdx'
+//     const getInterestResult = await db.queryParam_None(getInterestQuery)
+    
+//     resData = [];
 
-    if (!getLikesResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
-    } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getLikesResult));
-    }
+//     for (var i=0; getInterestResult.length; i++){
+//     const getInterestQuery = 'SELECT thumbnail, title, cash FROM Ad WHERE category = ?'
+//     const getInterestResult = await db.queryParam_Parse(getInterestQuery,[req.decoded.interest[i]])
+//     };
+
+//     resData(Math.random());
+//     resData[i];
+
+
+
+//     if (!getLikesResult){
+//         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+//     } else{
+//     res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getLikesResult));
+//     }
     
     
     
-});
+// });
 
 
 //광고 조회
@@ -179,6 +192,34 @@ router.get('/detail/:idx',async(req,res) => {
     res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getDetailResult));
     }
 
+});
+
+//신청하기 버튼 후 기획서 신청정보 가져오기
+router.get('/apply',authUtils.isLoggedin, async(req,res) => {
+
+    const getApplyQuery = 'SELECT youtubeUrl, phone, location  FROM User WHERE userIdx = ?'
+    const getApplyResult = await db.queryParam_Parse(getApplyQuery,[req.decoded.idx]);
+
+    if (!getApplyResult){
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    } else{
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getApplyResult));
+    }
+    
+});
+
+//기획서 내용 입력
+router.post('/write', async(req,res) => {
+
+    const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl) VALUES(?,?,?,?,?,?,?,?)'
+    const getWriteResult = await db.queryParam_Parse(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl]);
+
+    if (!getWriteResult){
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    } else{
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
+    }
+    
 });
 
 
