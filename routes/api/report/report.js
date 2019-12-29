@@ -9,18 +9,18 @@ const jwtUtils = require('../../../module/jwt');
 
 router.get('/', async (req, res) => {
     // Instantiate
-    res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SIGNIN_SUCCESS))
+    res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.LOGIN_SUCCESS))
 })
 
 router.get('/info', async (req, res) => {
     // Instantiate
-    res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SIGNIN_SUCCESS))
+    res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.LOGIN_SUCCESS))
 })
 
 
 router.get('/:idx', async (req, res) => {
     // Instantiate
-    res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SIGNIN_SUCCESS))
+    res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.LOGIN_SUCCESS))
 })
 
 
