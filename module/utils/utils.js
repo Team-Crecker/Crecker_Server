@@ -1,7 +1,7 @@
 const authUtil = {
     successTrue: (status, message, data) => {
         return {
-            status: status,
+            statusCode: status,
             success: true,
             message: message,
             data: data
@@ -10,7 +10,7 @@ const authUtil = {
     successFalse: (status, message) => {
 
         return {
-            status: status,
+            statusCode: status,
             success: false,
             message: message
         }

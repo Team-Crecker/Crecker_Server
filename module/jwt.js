@@ -9,14 +9,17 @@ const options = {
 // 이건 랜덤 하게 나오는 옵션 
 const refreshOptions = {
     algorithm: "HS256",
-    expiresIn: "24h * 30",
+    expiresIn: "14d",
     issuer: "ig"
 };
 // 랜덤하게 나오는게 아니라 jwt signin으로 만들떄 
 module.exports = {
     sign: (user) => {
         const payload = {
-            idx: user.userIdx
+            idx: user.userIdx,
+            typeAd : user.typeAd,
+            typeExpert : user.typeExpert,
+            typeNews : user.typeNews,
         };
 
         const result = {
@@ -47,9 +50,10 @@ module.exports = {
     },
     refresh: (user) => {
         const payload = {
-            idx: user.idx,
-            grade: user.grade,
-            name: user.name
+            idx: user.userIdx,
+            typeAd : user.typeAd,
+            typeExpert : user.typeExpert,
+            typeNews : user.typeNews,
         };
         const result = {
             token: jwt.sign(payload, secretOrPrivateKey, refreshOptions),

@@ -19,11 +19,15 @@ router.post('/', async (req, res) => {
     const youtubeUrl = req.body.youtubeUrl;
     const agreement = req.body.agreement;
     const interest = req.body.interest;
+    const typeAd = req.body.typeAd;
+    const typeExpert = req.body.typeExpert;
+    const typeNews = req.body.typeNews;
+
     const hashcode = "dhdhdhdhd";
     const isAuth = 0
     const selectIdQuery = 'SELECT * FROM User WHERE email = ?'
     const selectIdResult = await db.queryParam_Parse(selectIdQuery, email);
-    const signupQuery = 'INSERT INTO User (email, password, phone, location, name, channelName, youtubeUrl, agreement, hashcode, salt, isAuth) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const signupQuery = 'INSERT INTO User (email, password, phone, location, name, channelName, youtubeUrl, agreement, hashcode, salt, isAuth, typeAd, typeExpert, typeNews) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
     if (selectIdResult[0] == null) {
         console.log("일치 없음");
@@ -31,17 +35,19 @@ router.post('/', async (req, res) => {
         const salt = buf.toString('base64');
         const hashedPw = await crypto.pbkdf2(password, salt, 1000, 32, 'SHA512')
         const signupResult = await db.queryParam_Arr(signupQuery, [email, hashedPw.toString('base64'), phone, location, name,
-            channelName, youtubeUrl, agreement, hashcode, salt, isAuth
+            channelName, youtubeUrl, agreement, hashcode, salt, isAuth, typeAd, typeExpert, typeNews
         ]);
         userIdx = signupResult['insertId']
 
-        for (var code of interest) {
-            const UserInterestQuery = 'INSERT INTO UserInterest (userIdx, categoryCodeIdx) VALUES (?, ?)';
-            const categoryIdxQuery = 'SELECT categoryCodeIdx FROM CategoryCode WHERE categoryCode=?'
-            const categoryIdxResult = await db.queryParam_Arr(categoryIdxQuery, [code]);
-            categoryCodeIdx = categoryIdxResult[0].categoryCodeIdx
-            const UserInterestResult = await db.queryParam_Arr(UserInterestQuery, [userIdx, categoryCodeIdx]);
-        }
+
+
+        // for (var code of interest) {
+        //     const UserInterestQuery = 'INSERT INTO UserInterest (userIdx, categoryCodeIdx) VALUES (?, ?)';
+        //     const categoryIdxQuery = 'SELECT categoryCodeIdx FROM CategoryCode WHERE categoryCode=?'
+        //     const categoryIdxResult = await db.queryParam_Arr(categoryIdxQuery, [code]);
+        //     categoryCodeIdx = categoryIdxResult[0].categoryCodeIdx
+        //     const UserInterestResult = await db.queryParam_Arr(UserInterestQuery, [userIdx, categoryCodeIdx]);
+        // }
 
         if (!signupResult) {
             res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.SIGNUP_FAIL));
