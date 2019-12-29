@@ -75,36 +75,45 @@ router.get('/random',async(req,res)=>{
 
 //카테고리 별 광고 with d-day
 router.get('/list/:flag',async (req,res) => {
+    
+    const resData =[];
 
-    const resData={
-        ad_idx:"",
-        thumbnail:"",
-        title:"",
-        cash:"",
-        dday:''
-    };
 
     const getCategoryQuery = 'SELECT ad_idx,thumbnail, applyTo, title, cash  FROM Ad WHERE category= ? ORDER BY applyTo ' 
     const getCategoryResult = await db.queryParam_Parse(getCategoryQuery,[req.params.flag]);
-    
-    resData.ad_idx = getCategoryResult[0].ad_idx;
-    resData.thumbnail = getCategoryResult[0].thumbnail;
-    resData.title = getCategoryResult[0].title;
-    resData.cash= getCategoryResult[0].cash;
+ 
   
-    console.log(getCategoryResult[0].applyTo);
-     var t1 = moment(getCategoryResult[0].applyTo,'YYYY-MM-DD HH:mm');
-     var t2 = moment();
+    for(let i=0;i<getCategoryResult.length;i++){
+
+        const item={
+            ad_idx:"",
+            thumbnail:"",
+            title:"",
+            cash:"",
+            dday:''
+        };
+
+        item.ad_idx = getCategoryResult[i].ad_idx;
+        item.thumbnail = getCategoryResult[i].thumbnail;
+        item.title = getCategoryResult[i].title;
+        item.cash= getCategoryResult[i].cash;
+       
+
+    var t1 = moment(getCategoryResult[i].applyTo,'YYYY-MM-DD HH:mm');
+    var t2 = moment();
+ 
+    let ddayfull = moment.duration(t2.diff(t1)).asDays();
+     //6.231323
+    let ddayfullstring = ddayfull.toString();
+
+    let dday  =   ddayfullstring.split(".");
+   
+    item.dday= dday[i];
+    resData.push(item);
+
+    }
   
-     let ddayfull = moment.duration(t2.diff(t1)).asDays();
-      //6.231323
-     let ddayfullstring = ddayfull.toString();
-
-     let dday  =   ddayfullstring.split(".");
-    
-     resData.dday= dday[0];
-     
-
+ 
     if (!getCategoryResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
@@ -145,33 +154,22 @@ router.get('/popular',async(req,res) => {
 });
 
 
-// //광고 맞춤형? 
-// router.get('/interest',async(req,res) => {
+//광고 맞춤형? 
+router.get('/interest',authUtils.isLoggedin, async(req,res) => {
     
-//     const getInterestQuery = 'SELECT categoryCodeIdx FROM User JOIN UserInterest ON User.userIdx = UserInterest.userIdx'
-//     const getInterestResult = await db.queryParam_None(getInterestQuery)
-    
-//     resData = [];
+    console.log(req.decoded.typeAd);
+    const getInterestQuery = 'SELECT thumbnail, title, cash FROM Ad WHERE category = ?'
+    const getInterestResult = await db.queryParam_Parse(getInterestQuery,[req.decoded.typeAd])
 
-//     for (var i=0; getInterestResult.length; i++){
-//     const getInterestQuery = 'SELECT thumbnail, title, cash FROM Ad WHERE category = ?'
-//     const getInterestResult = await db.queryParam_Parse(getInterestQuery,[req.decoded.interest[i]])
-//     };
-
-//     resData(Math.random());
-//     resData[i];
-
-
-
-//     if (!getLikesResult){
-//         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
-//     } else{
-//     res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getLikesResult));
-//     }
+     if (!getInterestResult){
+         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+     } else{
+     res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getInterestResult));
+     }
     
     
     
-// });
+});
 
 
 //광고 조회
@@ -196,7 +194,6 @@ router.get('/detail/:idx',async(req,res) => {
 
 //신청하기 버튼 후 기획서 신청정보 가져오기
 router.get('/apply',authUtils.isLoggedin, async(req,res) => {
-
     const getApplyQuery = 'SELECT youtubeUrl, phone, location  FROM User WHERE userIdx = ?'
     const getApplyResult = await db.queryParam_Parse(getApplyQuery,[req.decoded.idx]);
 
