@@ -24,21 +24,8 @@ DB 오류 뜰 때
     1. GET, POST 확인하기
     2. 라우팅 제대로 되었는지 확인하기
 */
-router.get('/recommand/:flag', async (req, res) => { 
-    let selectNewsQuery;
-    if (req.params.flag == 0) //인기 뉴스
-        selectNewsQuery = 'SELECT * FROM News ORDER BY views DESC LIMIT 10';
-    else if (req.params.flag == 1) //최신 뉴스
-        selectNewsQuery = 'SELECT * FROM News ORDER BY calendarStart ASC LIMIT 10';
-    const selectNewsResult = await db.queryParam_None(selectNewsQuery);
 
-    if (!insertNewsResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
-    else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공 
-})
-
-router.get("/category/:flag", async (req, res) => {
+router.get('/:flag', async (req, res) => { 
     let selectNewsQuery;
     if (req.params.flag == 1) //교육 뉴스
         selectNewsQuery = 'SELECT * FROM News WHERE category = 1 ORDER BY calendarStart ASC';
@@ -52,9 +39,7 @@ router.get("/category/:flag", async (req, res) => {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공
-    
-});
-
+})
 
 router.post("/", upload.single('poster'), async (req, res) => {
     const insertNewsQuery = 'INSERT INTO News (poster, category ,host, title, contents, calendarStart, calendarEnd ,createAt) VALUES (?,?,?,?,?,?,?,?)';
@@ -64,8 +49,21 @@ router.post("/", upload.single('poster'), async (req, res) => {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
-    
 });
+
+router.get('/recommand/:flag', async (req, res) => { 
+    let selectNewsQuery;
+    if (req.params.flag == 0) //인기 뉴스
+        selectNewsQuery = 'SELECT * FROM News ORDER BY views DESC LIMIT 10';
+    else if (req.params.flag == 1) //최신 뉴스
+        selectNewsQuery = 'SELECT * FROM News ORDER BY calendarStart ASC LIMIT 10';
+    const selectNewsResult = await db.queryParam_None(selectNewsQuery);
+
+    if (!insertNewsResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공 
+})
 
 module.exports = router;
 
