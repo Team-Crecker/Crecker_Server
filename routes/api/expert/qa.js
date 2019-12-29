@@ -10,6 +10,7 @@ const defaultRes = require("../../../module/utils/utils");
 const statusCode = require("../../../module/utils/statusCode");
 const resMessage = require("../../../module/utils/responseMessage");
 const db = require("../../../module/pool");
+const isLoggedin = require('../../../module/utils/authUtils').isLoggedin;
 /*   
     idx
     제목
@@ -23,7 +24,7 @@ router.get("/", async function(req, res, next) {
     //다 보여주기
 });
 
-router.get("/:type", async function(req, res, next) {
+router.get("/:type", isLoggedin ,async function(req, res, next) {
     //답변순, 등록순, 조회순
     const type = req.params.type;
     let selectLawQuery;
@@ -48,7 +49,7 @@ router.get("/:type", async function(req, res, next) {
 
 });
 
-router.post("/", async function(req, res, next) {
+router.post("/", isLoggedin, async function(req, res, next) {
     // 질문하기
     const insertLawQuery = 'INSERT INTO Question (title, category, contents, privateYN, answerYN, views ,createAt) VALUES (?, 1,?,?,?,?,?)'; //category 1 == Law
     const insertLawResult = await db.queryParam_Arr(insertLawQuery, [req.body.title, req.body.category ,req.body.contents, 0 , 0,0,moment().format('YYYY-MM-DD HH:mm:ss') ])
@@ -60,7 +61,7 @@ router.post("/", async function(req, res, next) {
     
 });
 
-router.put("/", async function(req, res, next) {
+router.put("/", isLoggedin ,async function(req, res, next) {
     // 전문가 답변
     const insertLawQuery = 'INSERT INTO Answer (title, category ,contents, privateYN, createAt) VALUES (?, 1,?,?,?)';
     const updateLawQuery = `UPDATE Question SET answerYN = 1 WHERE questionIdx=${req.body.questionIdx}`; // 답변 완료
@@ -81,7 +82,7 @@ router.put("/", async function(req, res, next) {
 
 });
 
-router.put("/apply", async function(req, res, next) {
+router.put("/apply", isLoggedin ,async function(req, res, next) {
     // 상담 신청
     const insertLawQuery = 'INSERT INTO Consult (consultDate, consultTime, contents ,createAt) VALUES (?,?,?,?)'; //category 1 == Law
     const insertLawResult = await db.queryParam_Arr(insertLawQuery, [req.body.consultDate ,req.body.consultTime ,req.body.contents , moment().format('YYYY-MM-DD HH:mm:ss') ])
