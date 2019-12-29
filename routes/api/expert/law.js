@@ -16,20 +16,26 @@ const db = require("../../../module/pool");
 */
 /* GET home page. */
 
-// router.get("/", function(req, res, next) {
-//   res.send("respond with a resource");
-// });
+router.get("/question/:flag/:questionIdx", async function(req, res, next) {
+    const selectLawQuery = `SELECT * FROM Question WHERE category=1 AND questionIdx=${req.params.questionIdx}`;
+    const selectLawResult = await db.queryParam_None(selectLawQuery);
+
+    if (!selectLawResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 문의 조회 성공", selectLawResult));
+});
 
 router.get("/question/:flag", async (req, res) => {
     let selectLawQuery;
-    if(req.params.flag == 0) { //답변순
-        selectLawQuery = 'SELECT * FROM Law ORDER BY answerTime DESC';
+    if(req.params.flag == 1) { //답변순
+        selectLawQuery = `SELECT * FROM Question WHERE category=1 ORDER BY answerTime DESC `;
     }
-    else if (req.params.flag == 1) { //등록순 
-        selectLawQuery = 'SELECT * FROM Law ORDER BY createAt DESC';
+    else if (req.params.flag == 2) { //등록순 
+        selectLawQuery = `SELECT * FROM Question WHERE category=1 ORDER BY createAt DESC`;
     }
-    else if(req.params.flag == 2) { //조회순 
-        selectLawQuery = 'SELECT * FROM Law ORDER BY views DESC';
+    else if(req.params.flag == 3) { //조회순 
+        selectLawQuery = `SELECT * FROM Question WHERE category=1 ORDER BY views DESC`;
     }
 
     const selectLawResult = await db.queryParam_None(selectLawQuery)
@@ -42,11 +48,10 @@ router.get("/question/:flag", async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 문의 조회 성공", selectLawResult));    // 작품 삭제 성공
     
     
-
 });
 router.post("/question", async (req, res) => {
     const insertLawQuery = 'INSERT INTO Question (title, category, contents, privateYN, answerYN, views ,createAt) VALUES (?, 1,?,?,?,?,?)'; //category 1 == Law
-    const insertLawResult = await db.queryParam_Arr(insertLawQuery, [req.body.title, req.body.contents, req.body.privateYN, 0 , 0,moment().format('YYYY-MM-DD HH:mm:ss') ])
+    const insertLawResult = await db.queryParam_Arr(insertLawQuery, [req.body.title, req.body.category ,req.body.contents, 0 , 0,0,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertLawResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
@@ -58,6 +63,7 @@ router.post("/question", async (req, res) => {
 });
 // INSERT, UPDATE, DELETE 가 한 라우트에 2개 이상이면 트랜젝션으로 묶는다.
 // 답변 등록은 Postman으로 직접 등록
+// 답변이 등록 되어있으면 안되게 해야하는데, 클라이언트와 협의하기
 router.post("/answer", async (req, res) => {
     const insertLawQuery = 'INSERT INTO Answer (title, category ,contents, privateYN, createAt) VALUES (?, 1,?,?,?)';
     const updateLawQuery = `UPDATE Question SET answerYN = 1 WHERE questionIdx=${req.body.questionIdx}`; // 답변 완료
@@ -71,7 +77,6 @@ router.post("/answer", async (req, res) => {
 
     }
     );
-
     if (!insertTransaction)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else   
@@ -80,8 +85,8 @@ router.post("/answer", async (req, res) => {
 });
 
 router.post("/consult", async (req, res) => {
-    const insertLawQuery = 'INSERT INTO Consult (title, consultDate, consultTime, contents ,createAt) VALUES (?,?,?,?,?)'; //category 1 == Law
-    const insertLawResult = await db.queryParam_Arr(insertLawQuery, [req.body.title, req.body.consultDate ,req.body.consultTime ,req.body.contents , moment().format('YYYY-MM-DD HH:mm:ss') ])
+    const insertLawQuery = 'INSERT INTO Consult (consultDate, consultTime, contents ,createAt) VALUES (?,?,?,?)'; //category 1 == Law
+    const insertLawResult = await db.queryParam_Arr(insertLawQuery, [req.body.consultDate ,req.body.consultTime ,req.body.contents , moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertLawResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
