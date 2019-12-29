@@ -15,5 +15,11 @@ module.exports = {
   CREATE_TOKEN: "토큰 발급 완료.",
   REFRESH_TOKEN: "토큰 재발급 완료.",
   NOT_CORRECT_REFRESH_TOKEN_USER: "토큰과 일치하는 유저가 없습니다.",
+
+  NO_SELECT_AUTHORITY: "조회 권한 없음.",
+  USER_SELECTED: "회원 조회 성공.",
+
+  INSERT_AD_SUCCESS: "광고 등록 성공.",
+  INSERT_AD_FAILED: "광고 등록 실패"
 };
  
