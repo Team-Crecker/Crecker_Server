@@ -9,4 +9,5 @@ router.use('/report', require('./report/index'))
 router.use('/cash', require('./cash/index'))
 router.use('/user', require('./user/index'))
 router.use('/userad', require('./userad/index'))
+router.use('/notice', require('./notice/index'))
 module.exports = router;

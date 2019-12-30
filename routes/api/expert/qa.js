@@ -25,7 +25,7 @@ const isLoggedin = require('../../../module/utils/authUtils').isLoggedin;
 
 /* GET home page. */
 
-router.get("/:category/:type", isLoggedin ,async function(req, res) {
+router.get("/:category/:type", async function(req, res) {
     //답변순, 등록순, 조회순
     const category  = req.params.category;
     const type = req.params.type; //1은 답변순
@@ -49,7 +49,7 @@ router.get("/:category/:type", isLoggedin ,async function(req, res) {
 
 });
 
-router.get("/:category/:type/:idx", isLoggedin ,async function(req, res) {
+router.get("/:category/:type/:idx", async function(req, res) {
     //답변순, 등록순, 조회순
     const {category, type, idx}  = req.params; 
     
@@ -71,7 +71,7 @@ router.get("/:category/:type/:idx", isLoggedin ,async function(req, res) {
 });
 
 
-router.post("/", isLoggedin, async function(req, res) {
+router.post("/", async function(req, res) {
     // 질문하기
     const {Qtitle, Qcontent, category, isSecret} = req.body;
     const user = req.decoded.idx;
@@ -85,7 +85,7 @@ router.post("/", isLoggedin, async function(req, res) {
     
 });
 
-router.put("/", isLoggedin , async function(req, res, next) {
+router.put("/" , async (req, res) => {
     // 전문가 답변
     const {expertConsultIdx,Atitle, Acontent, isComplete} = req.body;
     const user = req.decoded.idx;
@@ -104,10 +104,9 @@ router.put("/", isLoggedin , async function(req, res, next) {
     Ctime = 'a hh : mm'
 */
 
-router.put("/apply", isLoggedin ,async function(req, res, next) {
+router.put("/apply" ,async function(req, res, next) {
     // 상담 신청
     const {Cdate, Ctime, isSuccess, expertConsultIdx} = req.body;
-    console.log(Cdate);
     const user = req.decoded.idx;
     const updateLawQuery = `UPDATE ExpertConsult SET Cdate = ?, isSuccess = ?, consultUpdateAt = ? WHERE expertConsultIdx = ?`; // 답변 완료
     const updateLawResult = await db.queryParam_Arr(updateLawQuery, [moment(Cdate+Ctime, 'YYYY/ MM/ DDa hh : mm').format('YYYY-MM-DD HH:mm:ss'), isSuccess, moment().format('YYYY-MM-DD HH:mm:ss'), expertConsultIdx])

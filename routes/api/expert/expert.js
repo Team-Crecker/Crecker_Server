@@ -4,13 +4,13 @@ var router = express.Router();
 var moment = require('moment')
 
 const upload = require('../../../config/multer');
-
+const isLoggedin = require('../../../module/utils/authUtils').isLoggedin
 const defaultRes = require("../../../module/utils/utils");
 const statusCode = require("../../../module/utils/statusCode");
 const resMessage = require("../../../module/utils/responseMessage");
 const db = require("../../../module/pool");
 
-router.get('/profile', async (req, res) => {
+router.get('/profile' ,async (req, res) => {
     const selectExpertQuery = 'SELECT * FROM Expert ORDER BY experience DESC'; //카테고리에서 조회수 제일 높은 3개만 뽑기
     const selectExpertResult = await db.queryParam_None(selectExpertQuery)
 
@@ -20,7 +20,7 @@ router.get('/profile', async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "전문가 프로필 전체 조회 성공", selectExpertResult));    // 작품 삭제 성공
 })
 
-router.post('/profile', upload.single('photo'),async (req, res) => {
+router.post('/profile' ,upload.single('photo'),async (req, res) => {
     const insertExpertQuery = 'INSERT INTO Expert (category, name, experience, description, photo) VALUES (?, ?, ?, ?)';
     const insertExpertResult = await db.queryParam_Arr(insertExpertQuery,[req.body.category, req.body.name, req.body.experience, req.body.description, req.file.location])
     
@@ -31,25 +31,25 @@ router.post('/profile', upload.single('photo'),async (req, res) => {
 })
 
 
-router.get('/notice', async (req, res) => {
+// router.get('/notice' ,async (req, res) => {
 
-        const selectExpertQuery = 'SELECT * FROM ExpertNotice';
-        const selectExpertResult = await db.queryParam_None(selectExpertQuery)
+//         const selectExpertQuery = 'SELECT * FROM ExpertNotice';
+//         const selectExpertResult = await db.queryParam_None(selectExpertQuery)
     
-        if (!selectExpertResult)
-            res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));
-        else
-            res.status(200).send(defaultRes.successTrue(statusCode.OK, "필독사항 조회 성공", selectExpertResult));    // 작품 삭제 성공
-})
+//         if (!selectExpertResult)
+//             res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));
+//         else
+//             res.status(200).send(defaultRes.successTrue(statusCode.OK, "필독사항 조회 성공", selectExpertResult));    // 작품 삭제 성공
+// })
 
-router.post('/notice', async (req, res) => {
-    const insertLawQuery = 'INSERT INTO ExpertNotice (title, contents) VALUES (?, ?)';
-    const insertLawResult = await db.queryParam_Arr(insertLawQuery,[req.body.title, req.body.contents])
+// router.post('/notice' ,async (req, res) => {
+//     const insertLawQuery = 'INSERT INTO ExpertNotice (title, contents) VALUES (?, ?)';
+//     const insertLawResult = await db.queryParam_Arr(insertLawQuery,[req.body.title, req.body.contents])
     
-    if (!insertLawResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
-    else   
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "필독사항 등록 성공"));    // 작품 삭제 성공
-})
+//     if (!insertLawResult)
+//         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+//     else   
+//         res.status(200).send(defaultRes.successTrue(statusCode.OK, "필독사항 등록 성공"));    // 작품 삭제 성공
+// })
 
 module.exports = router;
