@@ -35,6 +35,33 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
    
 });
 
+//광고 삽입-코드 정리
+router.post('/insert2',upload.array('imgs'),async(req,res)=>{          
+                           
+    
+    console.log(req.body);
+    const {title, subtitle, cash, applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate
+    , preference, campaignInfo, url, reward, keyword, campaignMission, addInfo, category, views }  = req.body;
+    const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
+
+    const insertAdQuery ="INSERT INTO Ad "
+    + "(thumbnail,title,subtitle,cash,applyFrom,applyTo,choice,uploadFrom,uploadTo,completeDate,"
+    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,category,views,createAt) "
+    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const insertAdResult = await  db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
+        applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate,
+    summaryPhoto, fullPhoto, preference, campaignInfo, url, 
+    reward, keyword, campaignMission, addInfo, category,views,moment().format('YYYY-MM-DD HH:mm:ss')]);
+    
+    if (!insertAdResult){
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    } else{
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
+    }
+
+   
+});
+
 //광고 첫 화면 랜덤이미지 제공
 router.get('/random',async(req,res)=>{  
     const resData={
@@ -79,21 +106,21 @@ router.get('/list/:flag',async (req,res) => {
     const resData =[];
 
 
-    const getCategoryQuery = 'SELECT ad_idx,thumbnail, applyTo, title, cash  FROM Ad WHERE category= ? ORDER BY applyTo ' 
+    const getCategoryQuery = 'SELECT adIdx,thumbnail, applyTo, title, cash  FROM Ad WHERE category= ? ORDER BY applyTo ' 
     const getCategoryResult = await db.queryParam_Parse(getCategoryQuery,[req.params.flag]);
  
   
     for(let i=0;i<getCategoryResult.length;i++){
 
         const item={
-            ad_idx:"",
+            adIdx:"",
             thumbnail:"",
             title:"",
             cash:"",
             dday:''
         };
 
-        item.ad_idx = getCategoryResult[i].ad_idx;
+        item.adIdx = getCategoryResult[i].adIdx;
         item.thumbnail = getCategoryResult[i].thumbnail;
         item.title = getCategoryResult[i].title;
         item.cash= getCategoryResult[i].cash;
@@ -154,7 +181,7 @@ router.get('/popular',async(req,res) => {
 });
 
 
-//광고 맞춤형? 
+//광고 맞춤형 
 router.get('/interest',authUtils.isLoggedin, async(req,res) => {
     
     console.log(req.decoded.typeAd);
@@ -176,11 +203,11 @@ router.get('/interest',authUtils.isLoggedin, async(req,res) => {
 router.get('/detail/:idx',async(req,res) => {
 
 
-    const getDetailQuery = 'SELECT * FROM Ad WHERE ad_idx = ?'
+    const getDetailQuery = 'SELECT * FROM Ad WHERE adIdx = ?'
     const getDetailResult = await db.queryParam_Parse(getDetailQuery,[req.params.idx]);
   
 
-     const updateViewsQuery = 'UPDATE Ad SET views = views+1 WHERE ad_idx=?'
+     const updateViewsQuery = 'UPDATE Ad SET views = views+1 WHERE adIdx=?'
      const updateViewsResult = await db.queryParam_Parse(updateViewsQuery,[req.params.idx]);
     if (!getDetailResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "디테일 조회 DB 실패"));
@@ -207,7 +234,7 @@ router.get('/apply',authUtils.isLoggedin, async(req,res) => {
 
 //기획서 내용 입력
 router.post('/write', async(req,res) => {
-
+    console.log(req.body);
     const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl) VALUES(?,?,?,?,?,?,?,?)'
     const getWriteResult = await db.queryParam_Parse(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl]);
 
@@ -216,6 +243,7 @@ router.post('/write', async(req,res) => {
     } else{
     res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
     }
+    
     
 });
 
