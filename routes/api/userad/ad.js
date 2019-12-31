@@ -5,7 +5,9 @@ const statusCode = require('../../../module/utils/statusCode');
 const resMessage = require('../../../module/utils/responseMessage')
 const db = require('../../../module/pool');
 const jwtUtils = require('../../../module/jwt');
+const moment = require('moment')
 const isLoggedin = require('../../../module/utils/authUtils').isLoggedin
+const authVideo = require('../../../module/youtube').authVideo;
 /*
 마이 페이지 중에서 광고만 추출해서 라우트
 1. 광고 상태별 조회
@@ -27,20 +29,40 @@ const isLoggedin = require('../../../module/utils/authUtils').isLoggedin
  -> /userad/2(배정)/:useradIdx/auth
  -> POST
 */
-router.get("/:progress",async (req, res) => {
+const alerm = element => {
+    moment.locale('ko');
+    const nowDate = moment();
+    const warn = moment.duration(moment(element.uploadTo).diff(nowDate)).asDays();
+    if(warn <= 1)    
+        return true;
+    else    
+        return false;
+}
+
+
+router.get("/:progress", isLoggedin,async (req, res) => {
     let selectUseradQuery;
     if (req.params.progress == 1)
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=1 ORDER BY b.uploadFrom DESC';
+        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash, FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=1 ORDER BY b.uploadFrom DESC';
     else if (req.params.progress == 2) 
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=2 ORDER BY b.uploadFrom DESC';
+        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash, b.uploadTo FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=2 ORDER BY b.uploadFrom DESC';
     else if (req.params.progress == 3)
         selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=3 ORDER BY b.uploadFrom DESC';
     else if (req.params.progress == 4)
         selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=4 ORDER BY b.uploadFrom DESC';
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
     
-    // selectUseradResult.adlength = selectUseradResult.length;
-    console.log(selectUseradResult)
+    if (req.params.progress == 2) {
+        for (var element of selectUseradResult) {
+            const isWarn = alerm(element);
+            if (isWarn)
+                element.isWarn = 1;
+            else
+                element.isWarn = 0;
+        }
+    }
+
+    // console.log(selectUseradResult)
     if (!selectUseradResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));
     else
@@ -91,8 +113,30 @@ router.get("/:progress/:idx", async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공", selectUseradResult));    // 작품 삭제 성공 
 });
 
-router.post('/auth' , async (req, res) => {
+router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
+    const {thumbnails, publishedAt, viewCount, likeCount} = req.youtubeData;
+    const {adIdx ,url, review} = req.body;
+
+    const insertVideoInfoQuery = `INSERT INTO VideoInfo (thumbnail, url, uploadDate, review, likes, views1) VALUES (?,?,?,?,?,?)`;
+    const insertVideoInfoResult = await db.queryParam_Arr(insertVideoInfoQuery, [thumbnails, url, publishedAt, review, likeCount, viewCount]);
+
+    const selectVideoInfoQuery = `SELECT videoInfoIdx FROM VideoInfo WHERE url = '${url}'`;
+    const updateUserAdQuery = `UPDATE UserAd SET progress = 3, updateAt = ?, videoInfoIdx = ? WHERE userIdx=? AND adIdx=?`;
     
+    const selectVideoInfoResult = await db.queryParam_None(selectVideoInfoQuery);
+
+    console.log(selectVideoInfoResult);
+    if (!selectVideoInfoResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "셀렉트"));    // 작품 삭제 성공
+
+    const updateUserAdResult = await db.queryParam_Arr(updateUserAdQuery,[moment().format('YYYY-MM-DD HH:mm:ss'), selectVideoInfoResult[0].videoInfoIdx, req.decoded.idx, adIdx])
+
+    if(!insertVideoInfoResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "인서트"));    // 작품 삭제 성공
+    else if (!updateUserAdResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "업데이트"));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공")); 
 })
 
 module.exports = router;

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const defaultRes = require('../../../module/utils/utils');
-const statusCode = require('../../../module/utils/statusCode');
-const resMessage = require('../../../module/utils/responseMessage')
-const db = require('../../../module/pool');
-const jwtUtils = require('../../../module/jwt');
+const defaultRes = require('./utils/utils');
+const statusCode = require('./utils/statusCode');
+const resMessage = require('./utils/responseMessage')
+const db = require('./pool');
+const jwtUtils = require('./jwt');
 const axios = require('axios') //Youtube API와 통신하기 위한 비동기 자바스크립트 모듈
 
 module.exports = {
