@@ -10,4 +10,5 @@ router.use('/cash', require('./cash/index'))
 router.use('/user', require('./user/index'))
 router.use('/userad', require('./userad/index'))
 router.use('/notice', require('./notice/index'))
+router.use('/youtube', require('./youtube/index'))
 module.exports = router;
