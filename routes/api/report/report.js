@@ -5,10 +5,13 @@ const statusCode = require('../../../module/utils/statusCode');
 const resMessage = require('../../../module/utils/responseMessage')
 const db = require('../../../module/pool');
 const jwtUtils = require('../../../module/jwt');
+const authUtil = require("../../../module/utils/authUtils");
 
 
-router.get('/', async (req, res) => {
+router.get('/', authUtil.isLoggedin ,async (req, res) => {
     // Instantiate
+    const idx = req.decoded.idx
+    
     res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.LOGIN_SUCCESS))
 })
 
