@@ -8,7 +8,7 @@ const defaultRes = require("../../module/utils/utils");
 const statusCode = require("../../module/utils/statusCode");
 const resMessage = require("../../module/utils/responseMessage");
 const db = require("../../module/pool");
-
+const isLoggedin = require('../../module/utils/authUtils').isLoggedin;
 /*   
     idx
     제목
@@ -24,8 +24,26 @@ DB 오류 뜰 때
     1. GET, POST 확인하기
     2. 라우팅 제대로 되었는지 확인하기
 */
+router.get('/:flag/:idx', isLoggedin, async (req, res) => { 
+    const selectNewsQuery = `SELECT * FROM News WHERE newsIdx=${idx} ORDER BY calendarStart ASC`;
+    const updateNewsQuery = `UPDATE News SET views = views+1 WHERE newsIdx=${idx}`;
 
-router.get('/:flag', async (req, res) => { 
+        let selectNewsResult;
+    const selectTransaction = db.Transaction( async connection => {
+        const updateNewsResult = await db.queryParam_None(updateNewsQuery);
+        selectNewsResult = await db.queryParam_None(selectNewsQuery)
+        
+    })
+   
+
+    if (!selectTransaction)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공
+})
+
+
+router.get('/:flag', isLoggedin ,async (req, res) => { 
     let selectNewsQuery;
     if (req.params.flag == 1) //교육 뉴스
         selectNewsQuery = 'SELECT * FROM News WHERE category = 1 ORDER BY calendarStart ASC';
@@ -51,7 +69,7 @@ router.post("/", upload.single('poster'), async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
 });
 
-router.get('/recommand/:flag', async (req, res) => { 
+router.get('/recommand/:flag', isLoggedin,async (req, res) => { 
     let selectNewsQuery;
     if (req.params.flag == 0) //인기 뉴스
         selectNewsQuery = 'SELECT * FROM News ORDER BY views DESC LIMIT 10';

@@ -20,6 +20,25 @@ module.exports = {
   USER_SELECTED: "회원 조회 성공.",
 
   INSERT_AD_SUCCESS: "광고 등록 성공.",
-  INSERT_AD_FAILED: "광고 등록 실패"
-};
+  INSERT_AD_FAILED: "광고 등록 실패",
+
+  SELECT_EXPERT_PROFILE_SUCCESS: "전문가 프로필 전체조회 성공",
+  SELECT_EXPERT_PROFILE_FAILED: "전문가 프로필 전체조회 실패", 
+  INSERT_EXPERT_PROFILE_SUCCESS: "전문가 프로필 입력 성공",
+  INSERT_EXPERT_PROFILE_FAILED: "전문가 프로필 입력 실패",
+
+  SELECT_EXPERT_CONSULT_SUCCESS: "상담프로세스 조회 성공",
+  SELECT_EXPERT_CONSULT_FAILED: "상담프로세스 조회 실패", 
+  INSERT_EXPERT_QUESTION_SUCCESS: "질문 등록 성공",
+  INSERT_EXPERT_QUESTION_FAILED: "질문 등록 실패", 
+  INSERT_EXPERT_ANSWER_SUCCESS: "답변 등록 성공",
+  INSERT_EXPERT_ANSWER_FAILED: "질문 등록 실패", 
+  INSERT_EXPERT_CONSULT_SUCCESS: "상담 등록 성공",
+  INSERT_EXPERT_CONSULT_FAILED: "상담 등록 실패",
+  
+  SELECT_USER_AD_SUCCESS: "유저 광고 조회 성공",
+  SELECT_USER_AD_FAILED: "유저 광고 조회 실패",
+  SELECT_USER_AD_ONE_SUCCESS: "유저 광고 개별 조회 성공",
+  SELECT_USER_AD_ONE_FAILED: "유저 광고 개별 조회 실패",
+}
  
