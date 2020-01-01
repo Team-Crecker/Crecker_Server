@@ -25,22 +25,85 @@ const isLoggedin = require('../../../module/utils/authUtils').isLoggedin;
 
 /* GET home page. */
 
-router.get("/:category/:type", async function(req, res) {
+router.get("/category/:category", async function(req, res) {
+    //답변순, 등록순, 조회순
+    const category  = req.params.category;
+    // const type = req.params.type; //1은 답변순
+    let selectQaQuery;
+    // if(type == 1) { //답변순
+        selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE category = ${category} ORDER BY AnswerUpdateAt DESC `;
+    // }
+    // else if (type == 2) { //등록순 
+    //     selectQaQuery = `SELECT (expertConsultIdx, Qtitle, Qcontent, isComplete, isSecret) FROM ExpertConsult WHERE category = ${category} ORDER BY createAt DESC`;
+    // }
+    // else if(type == 3) { //조회순 
+    //     selectQaQuery = `SELECT (expertConsultIdx, Qtitle, Qcontent, isComplete, isSecret) FROM ExpertConsult WHERE category = ${category} ORDER BY views DESC`;
+    // }
+
+    const selectQaResult = await db.queryParam_None(selectQaQuery)
+
+    if (!selectQaResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 문의 정렬별 조회 성공", selectQaResult));    // 작품 삭제 성공
+
+});
+
+router.get("/posted", isLoggedin ,async function(req, res) { //내 질문
+    const userIdx = req.decoded.idx;    
+    const selectQaQuery = `SELECT * FROM ExpertConsult WHERE user = ${userIdx} AND isComplete IS NULL ORDER BY views DESC`;
+
+    const selectQaResult = await db.queryParam_None(selectQaQuery)
+
+    if (!selectQaResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 유저 문의 조회 성공", selectQaResult));    // 작품 삭제 성공
+
+});
+
+router.get("/answered", isLoggedin ,async function(req, res) {
+    const userIdx = req.decoded.idx;    
+    const selectQaQuery = `SELECT * FROM ExpertConsult WHERE user = ${userIdx} AND isSuccess IS NULL ORDER BY views DESC`;
+
+    const selectQaResult = await db.queryParam_None(selectQaQuery)
+
+    if (!selectQaResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 유저 문의 조회 성공", selectQaResult));    // 작품 삭제 성공
+
+});
+
+router.get("/consulted", isLoggedin ,async function(req, res) {
+    const userIdx = req.decoded.idx;    
+    const selectQaQuery = `SELECT * FROM ExpertConsult WHERE user = ${userIdx} AND isSuccess IS NOT NULL ORDER BY views DESC`;
+
+    const selectQaResult = await db.queryParam_None(selectQaQuery)
+
+    if (!selectQaResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 유저 문의 조회 성공", selectQaResult));    // 작품 삭제 성공
+
+});
+
+router.get("/:userIdx", isLoggedin ,async function(req, res) {
     //답변순, 등록순, 조회순
     const category  = req.params.category;
     const type = req.params.type; //1은 답변순
-    let selectLawQuery;
+    let selectQaQuery;
     if(type == 1) { //답변순
-        selectLawQuery = `SELECT * FROM ExpertConsult WHERE category = ${category} ORDER BY AnswerUpdateAt DESC `;
+        selectQaQuery = `SELECT * FROM ExpertConsult WHERE category = ${category} ORDER BY AnswerUpdateAt DESC `;
     }
     else if (type == 2) { //등록순 
-        selectLawQuery = `SELECT * FROM ExpertConsult WHERE category = ${category} ORDER BY createAt DESC`;
+        selectQaQuery = `SELECT * FROM ExpertConsult WHERE category = ${category} ORDER BY createAt DESC`;
     }
     else if(type == 3) { //조회순 
-        selectLawQuery = `SELECT * FROM ExpertConsult WHERE category = ${category} ORDER BY views DESC`;
+        selectQaQuery = `SELECT * FROM ExpertConsult WHERE category = ${category} ORDER BY views DESC`;
     }
 
-    const selectLawResult = await db.queryParam_None(selectLawQuery)
+    const selectLawResult = await db.queryParam_None(selectQaQuery)
 
     if (!selectLawResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
@@ -49,9 +112,10 @@ router.get("/:category/:type", async function(req, res) {
 
 });
 
-router.get("/:category/:type/:idx", async function(req, res) {
+
+router.get("/category/:category/:idx", async function(req, res) {
     //답변순, 등록순, 조회순
-    const {category, type, idx}  = req.params; 
+    const {category, idx}  = req.params; 
     
     const selectLawQuery = `SELECT * FROM ExpertConsult WHERE expertConsultIdx = ${idx}`;
     const updateLawQuery = `UPDATE ExpertConsult SET views = views +1 WHERE expertConsultIdx = ${idx}`;
@@ -62,7 +126,6 @@ router.get("/:category/:type/:idx", async function(req, res) {
         selectLawResult = await connection.query(selectLawQuery);
         
     });
-    console.log(selectLawResult.Cdate, selectLawResult.Ctime);
     if (!selectTransaction)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
     else
@@ -71,7 +134,7 @@ router.get("/:category/:type/:idx", async function(req, res) {
 });
 
 
-router.post("/", async function(req, res) {
+router.post("/", isLoggedin ,async function(req, res) {
     // 질문하기
     const {Qtitle, Qcontent, category, isSecret} = req.body;
     const user = req.decoded.idx;

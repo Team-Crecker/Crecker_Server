@@ -7,7 +7,6 @@ const db = require('../../../module/pool');
 const jwtUtils = require('../../../module/jwt');
 const moment = require('moment')
 const isLoggedin = require('../../../module/utils/authUtils').isLoggedin
-const authVideo = require('../../../module/youtube').authVideo;
 /*
 마이 페이지 중에서 광고만 추출해서 라우트
 1. 광고 상태별 조회

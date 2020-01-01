@@ -11,4 +11,6 @@ router.use('/user', require('./user/index'))
 router.use('/userad', require('./userad/index'))
 router.use('/notice', require('./notice/index'))
 router.use('/youtube', require('./youtube/index'))
+router.use('/faq', require('./faq'))
+router.use('/test', require('./notice'))
 module.exports = router;
