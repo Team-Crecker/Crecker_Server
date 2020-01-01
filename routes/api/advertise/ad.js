@@ -19,22 +19,22 @@ router.put('/pick', async(req,res) => {
     //자동으로 isPick을 0으로 모두 초기화시킴
     const updatePickQuery = 'UPDATE Ad SET isPick = 0'
     const updatePickResult = await db.queryParam_None(updatePickQuery);
+    console.log(req.body.adIdx)
     
     //관리자가 선택한 값을 1로 변경 
-    const putPickQuery = 'UPDATE Ad SET isPick = 1 WHERE adIdx = ?'
-    const putPickResult = await db.queryParam_Parse(putPickQuery,[req.body.adIdx]);
+    // const putPickQuery = 'UPDATE Ad SET isPick = 1 WHERE adIdx = ?'
+    // const putPickResult = await db.queryParam_Parse(putPickQuery,[req.body.adIdx]);
     
-    // for(let i=0; i<req.body.select ; i++){
-    //     const updatePickQuery2 = 'UPDATE Ad SET isPick = 1 WHERE adIdx =? ';
-    //     const updatePickResult2 = await db.queryParam_Parse(updatePickQuery2,[req.body.select[i]]);
-    // };
+    for (let i of req.body.adIdx) {
+        const updatePickQuery2 = 'UPDATE Ad SET isPick = 1 WHERE adIdx =? ';
+        // console.log(i)
+        const updatePickResult2 = await db.queryParam_Arr(updatePickQuery2, [i]);
+    };
     
-
-    console.log(updatePickResult);
     if (!updatePickResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",updatePickResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",updatePickResult));
     }
 
 });
@@ -196,7 +196,7 @@ const convert = element => {
 //광고 삽입
 router.post('/insert',upload.array('imgs'),async(req,res)=>{          
                            
-    console.log(req.body);
+    
     const {title, subtitle, cash, applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate
     , preference, campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, subscribers, subscribersNum }  = req.body;
     const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
@@ -208,7 +208,7 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
     const insertAdResult = await  db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
         applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate,
     summaryPhoto, fullPhoto, preference, campaignInfo, url, 
-    reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YY.MM.DD')],subscribers,subscribersNum);
+    reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YY.MM.DD'),subscribers,subscribersNum]);
     
     if (!insertAdResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
@@ -261,13 +261,14 @@ router.get('/apply',authUtils.isLoggedin, async(req,res) => {
 router.post('/write', authUtils.isLoggedin ,async(req,res) => {
     console.log(req.body);
     
-    const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl,isAgree) VALUES(?,?,?,?,?,?,?,?,?)'
-    const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, progress) VALUES (?,?,?)';
+    const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl,isAgree, userIdx) VALUES(?,?,?,?,?,?,?,?,?,?)'
+    const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, progress, createAt) VALUES (?,?,?,?)';
     
     const writeTransaction = db.Transaction(async connection => {
-        const getWriteResult = await connection.query(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl,req.body.isAgree]);
-        const postWriteResult = await connection.query(postWriteQuery,[req.decoded.idx, req.body.adIdx, 1]);
+        const getWriteResult = await connection.query(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl,req.body.isAgree, req.decoded.idx]);
+        const postWriteResult = await connection.query(postWriteQuery,[req.decoded.idx, req.body.adIdx, 1, moment().format('YYYY-MM-DD HH:mm:ss')]);
     })
+    
     
     if (!writeTransaction){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
