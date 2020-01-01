@@ -42,17 +42,51 @@ router.put('/pick', async(req,res) => {
 //관리자가 선택한 이미지 보여주기
 router.get('/random', async(req,res) => {
 
-    const GetHeaderQuery = "SELECT adIdx, thumbnail,applyTo,title,subtitle FROM Ad WHERE isPick = 1 order by rand() ";
-    const GetHeaderResult = await db.queryParam_Arr(GetHeaderQuery,[req.body.isPick]);
+ const resData =[];    
+ const getHeaderQuery = "SELECT adIdx, thumbnail,applyTo,title,subtitle FROM Ad WHERE isPick = 1 order by rand() ";
+ const getHeaderResult = await db.queryParam_Arr(getHeaderQuery,[req.body.isPick]);
 
-    console.log(GetHeaderResult);
-    if (!GetHeaderResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
-    } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",GetHeaderResult));
-    }
+for(let i=0; i<getHeaderResult.length; i++){
+
+    const item={
+        thumbnail:"",
+        title:"",
+        subtitle:"",
+        dday:''
+    };
+
+
+
+    item.thumbnail = getHeaderResult[i].thumbnail;
+    item.title = getHeaderResult[i].title;
+    item.subtitle = getHeaderResult[i].subtitle;
+    item.adIdx = getHeaderResult[i].adIdx;
+
+console.log(getHeaderResult[0].applyTo);
+ var t1 = moment(getHeaderResult[i].applyTo,'YYYY-MM-DD HH:mm');
+ var t2 = moment();
+
+
+ let ddayfull = moment.duration(t2.diff(t1)).asDays();
+  //6.231323
+ let ddayfullstring = ddayfull.toString();
+console.log(ddayfull)
+ let dday = ddayfullstring.split(".");
+
+ item.dday=  Number(dday[0]) ;
+
+ resData.push(item);
+
+}
+console.log(getHeaderResult);
+if (!getHeaderResult){
+    res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+} else{
+res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",resData));
+}
 
 });
+
 
 
 //광고 맞춤형 
