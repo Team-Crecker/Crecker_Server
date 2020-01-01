@@ -11,7 +11,7 @@ const resMessage = require("../../../module/utils/responseMessage");
 const db = require("../../../module/pool");
 
 router.get('/profile', isLoggedin , async (req, res) => {
-    const selectExpertQuery = 'SELECT expertIdx, category, name, experience, description, photo FROM Expert ORDER BY experience DESC'; //카테고리에서 조회수 제일 높은 3개만 뽑기
+    const selectExpertQuery = 'SELECT expertIdx, categoryCode, name, experience, description, photo FROM Expert ORDER BY experience DESC'; //카테고리에서 조회수 제일 높은 3개만 뽑기
     const selectExpertResult = await db.queryParam_None(selectExpertQuery)
 
     if (!selectExpertResult)
@@ -21,8 +21,8 @@ router.get('/profile', isLoggedin , async (req, res) => {
 })
 
 router.post('/profile' , isLoggedin ,upload.single('photo'), async (req, res) => {
-    const insertExpertQuery = 'INSERT INTO Expert (category, name, experience, description, photo, createAt) VALUES (?, ?, ?, ?, ?, ?)';
-    const insertExpertResult = await db.queryParam_Arr(insertExpertQuery,[req.body.category, req.body.name, req.body.experience, req.body.description, req.file.location, moment().format("YYYY-MM-DD HH:mm:dd")])
+    const insertExpertQuery = 'INSERT INTO Expert (categoryCode, name, experience, description, photo, createAt) VALUES (?, ?, ?, ?, ?, ?)';
+    const insertExpertResult = await db.queryParam_Arr(insertExpertQuery,[req.body.categoryCode, req.body.name, req.body.experience, req.body.description, req.file.location, moment().format("YYYY-MM-DD HH:mm:dd")])
     
     if (!insertExpertResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공

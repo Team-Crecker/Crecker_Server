@@ -145,6 +145,14 @@ router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
     
     const selectVideoInfoResult = await db.queryParam_None(selectVideoInfoQuery);
 
+    const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, createAt) VALUES (?,?,?,?)`;
+    const selectAdQuery = `SELECT thumbnail, categoryCode FROM Ad WHERE adIdx=${adIdx}`;
+    const selectUseradResult = await db.queryParam_None(selectAdQuery);
+    console.log(selectUseradResult)
+    let dealWithData = {};
+    dealWithData = selectUseradResult[0];
+    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [dealWithData.categoryCode, '비디오가 인증 완료 되었습니다', dealWithData.thumbnail, moment().format('YYYY-MM-DD HH:mm:ss')]);
+    
     console.log(selectVideoInfoResult);
     if (!selectVideoInfoResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "셀렉트"));    // 작품 삭제 성공

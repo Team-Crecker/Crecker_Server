@@ -19,40 +19,74 @@ router.put('/pick', async(req,res) => {
     //자동으로 isPick을 0으로 모두 초기화시킴
     const updatePickQuery = 'UPDATE Ad SET isPick = 0'
     const updatePickResult = await db.queryParam_None(updatePickQuery);
+    console.log(req.body.adIdx)
     
     //관리자가 선택한 값을 1로 변경 
-    const putPickQuery = 'UPDATE Ad SET isPick = 1 WHERE adIdx = ?'
-    const putPickResult = await db.queryParam_Parse(putPickQuery,[req.body.adIdx]);
+    // const putPickQuery = 'UPDATE Ad SET isPick = 1 WHERE adIdx = ?'
+    // const putPickResult = await db.queryParam_Parse(putPickQuery,[req.body.adIdx]);
     
-    // for(let i=0; i<req.body.select ; i++){
-    //     const updatePickQuery2 = 'UPDATE Ad SET isPick = 1 WHERE adIdx =? ';
-    //     const updatePickResult2 = await db.queryParam_Parse(updatePickQuery2,[req.body.select[i]]);
-    // };
+    for (let i of req.body.adIdx) {
+        const updatePickQuery2 = 'UPDATE Ad SET isPick = 1 WHERE adIdx =? ';
+        // console.log(i)
+        const updatePickResult2 = await db.queryParam_Arr(updatePickQuery2, [i]);
+    };
     
-
-    console.log(updatePickResult);
     if (!updatePickResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",updatePickResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",updatePickResult));
     }
 
 });
 
 //관리자가 선택한 이미지 보여주기
-router.get('/random', async(req,res) => {
+router.get('/random', authUtils.isLoggedin,async(req,res) => {
 
-    const GetHeaderQuery = "SELECT adIdx, thumbnail,applyTo,title,subtitle FROM Ad WHERE isPick = 1 order by rand()";
-    const GetHeaderResult = await db.queryParam_Arr(GetHeaderQuery,[req.body.isPick]);
+ const resData =[];    
+ const getHeaderQuery = "SELECT adIdx, thumbnail,applyTo,title,subtitle FROM Ad WHERE isPick = 1 order by rand() ";
+ const getHeaderResult = await db.queryParam_Arr(getHeaderQuery,[req.body.isPick]);
 
-    console.log(GetHeaderResult);
-    if (!GetHeaderResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
-    } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",GetHeaderResult));
-    }
+for(let i=0; i<getHeaderResult.length; i++){
+
+    const item={
+        thumbnail:"",
+        title:"",
+        subtitle:"",
+        dday:''
+    };
+
+
+
+    item.thumbnail = getHeaderResult[i].thumbnail;
+    item.title = getHeaderResult[i].title;
+    item.subtitle = getHeaderResult[i].subtitle;
+    item.adIdx = getHeaderResult[i].adIdx;
+
+console.log(getHeaderResult[0].applyTo);
+ var t1 = moment(getHeaderResult[i].applyTo,'YYYY-MM-DD HH:mm');
+ var t2 = moment();
+
+
+ let ddayfull = moment.duration(t2.diff(t1)).asDays();
+  //6.231323
+ let ddayfullstring = ddayfull.toString();
+console.log(ddayfull)
+ let dday = ddayfullstring.split(".");
+
+ item.dday=  Number(dday[0]) ;
+
+ resData.push(item);
+
+}
+console.log(getHeaderResult);
+if (!getHeaderResult){
+    res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+} else{
+res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",resData));
+}
 
 });
+
 
 
 //광고 맞춤형 
@@ -71,7 +105,7 @@ router.get('/interest', authUtils.isLoggedin, async(req,res) => {
 });
 
 //광고 인기순
-router.get('/popular',async(req,res) => {
+router.get('/popular',authUtils.isLoggedin,async(req,res) => {
 
     const getPopularQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad ORDER BY views DESC'
     const getPopularResult = await db.queryParam_None(getPopularQuery);
@@ -85,7 +119,7 @@ router.get('/popular',async(req,res) => {
 });
 
 //광고 최신순 with d-day
-router.get('/latest',async (req,res) => {
+router.get('/latest',authUtils.isLoggedin,async (req,res) => {
 
     const getLatestQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad ORDER BY createAt DESC'
     const getLatestResult = await db.queryParam_None(getLatestQuery);
@@ -99,7 +133,7 @@ router.get('/latest',async (req,res) => {
 
 
 //카테고리 별 광고 with d-day
-router.get('/list/:flag',async (req,res) => {
+router.get('/list/:flag',authUtils.isLoggedin,async (req,res) => {
     
     const resData =[];
 
@@ -161,8 +195,6 @@ const convert = element => {
 
 //광고 삽입
 router.post('/insert',upload.array('imgs'),async(req,res)=>{          
-                           
-    // console.log(req.body);
     const {title, subtitle, cash, applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate
     , preference, campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, subscribers, subscribersNum }  = req.body;
     const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
@@ -229,13 +261,14 @@ router.get('/apply',authUtils.isLoggedin, async(req,res) => {
 router.post('/write', authUtils.isLoggedin ,async(req,res) => {
     console.log(req.body);
     
-    const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl,isAgree) VALUES(?,?,?,?,?,?,?,?,?)'
-    const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, progress) VALUES (?,?,?)';
+    const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl,isAgree, userIdx) VALUES(?,?,?,?,?,?,?,?,?,?)'
+    const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, progress, createAt) VALUES (?,?,?,?)';
     
     const writeTransaction = db.Transaction(async connection => {
-        const getWriteResult = await connection.query(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl,req.body.isAgree]);
-        const postWriteResult = await connection.query(postWriteQuery,[req.decoded.idx, req.body.adIdx, 1]);
+        const getWriteResult = await connection.query(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl,req.body.isAgree, req.decoded.idx]);
+        const postWriteResult = await connection.query(postWriteQuery,[req.decoded.idx, req.body.adIdx, 1, moment().format('YYYY-MM-DD HH:mm:ss')]);
     })
+    
     
     if (!writeTransaction){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));

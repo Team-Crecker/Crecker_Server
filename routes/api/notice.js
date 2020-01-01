@@ -26,7 +26,7 @@ DB 오류 뜰 때
 
 router.get('/', isLoggedin, async (req, res) => { 
     const selectNoticeQuery = `SELECT * FROM Notice`;
-    const selectNoticeResult = await db.queryParam_None(selectFaqQuery)
+    const selectNoticeResult = await db.queryParam_None(selectNoticeQuery)
 
     if (!selectNoticeResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
@@ -37,8 +37,8 @@ router.get('/', isLoggedin, async (req, res) => {
 
 
 router.get('/:idx', isLoggedin ,async (req, res) => { 
-    const faqIdx = req.body.idx
-    const selectNoticeQuery = `SELECT * FROM Faq WHERE faqIdx=${faqIdx}`;
+    const noticeIdx = req.body.idx
+    const selectNoticeQuery = `SELECT * FROM Notice WHERE noticeIdx=${noticeIdx}`;
     const selectNoticeResult = await db.queryParam_None(selectNoticeQuery)
 
     if (!selectNewsResult)

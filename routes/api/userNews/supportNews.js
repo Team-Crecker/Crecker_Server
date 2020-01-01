@@ -7,6 +7,7 @@ const db = require('../../../module/pool');
 const jwtUtils = require('../../../module/jwt');
 const moment = require('moment')
 const isLoggedin = require('../../../module/utils/authUtils').isLoggedin
+const authVideo = require('../../../module/youtube').authVideo
 /*
 마이 페이지 중에서 광고만 추출해서 라우트
 1. 광고 상태별 조회
@@ -38,20 +39,11 @@ const alerm = element => {
         return false;
 }
 
-
-router.get("/:progress", isLoggedin,async (req, res) => {
-    let selectUseradQuery;
-    if (req.params.progress == 1)
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash, FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=1 ORDER BY b.uploadFrom DESC';
-    else if (req.params.progress == 2) 
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash, b.uploadTo FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=2 ORDER BY b.uploadFrom DESC';
-    else if (req.params.progress == 3)
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=3 ORDER BY b.uploadFrom DESC';
-    else if (req.params.progress == 4)
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=4 ORDER BY b.uploadFrom DESC';
+router.get("/", isLoggedin, async (req, res) => {
+    const userIdx = req.decoded.idx;
+    const selectUseradQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE a.userIdx=${userIdx} AND a.isScrapped = 1 ORDER BY b.calendarEnd DESC`
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
     const length = {length :selectUseradResult.length}
-    
     
     console.log(selectUseradResult)
     if (req.params.progress == 2) {
@@ -64,7 +56,7 @@ router.get("/:progress", isLoggedin,async (req, res) => {
         }
     }
     selectUseradResult[selectUseradResult.length] = length;
-    // console.log(selectUseradResult)
+
     if (!selectUseradResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));
     else
@@ -72,8 +64,8 @@ router.get("/:progress", isLoggedin,async (req, res) => {
     
 });
 
-router.get("/:progress/:idx", async (req, res) => {
-    const selectUseradQuery = `SELECT * FROM Ad WHERE adIdx = ${req.params.idx}`
+router.get("/:idx", isLoggedin ,async (req, res) => {
+    const selectUseradQuery = `SELECT * FROM SupportNews WHERE newsIdx = ${req.params.idx}`
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     if (!selectUseradResult)
