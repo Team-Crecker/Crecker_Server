@@ -25,7 +25,7 @@ router.get("/", isLoggedin , async function(req, res, next) {
     if (!selectNoticeResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 알림 조회 성공", selectNoticeResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 공지사항 조회 성공", selectNoticeResult));    // 작품 삭제 성공
 });
 
 // const insertTransaction = await db.Transaction(async (connection) => {

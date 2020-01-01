@@ -40,18 +40,19 @@ const alerm = element => {
 }
 
 
-router.get("/:progress", isLoggedin,async (req, res) => {
+router.get("/:progress", isLoggedin, async (req, res) => {
+    const userIdx = req.decoded.idx;
     let selectUseradQuery;
     if (req.params.progress == 1)
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash, FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=1 ORDER BY b.uploadFrom DESC';
+        selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=1 AND a.userIdx=${userIdx} ORDER BY b.uploadFrom DESC`;
     else if (req.params.progress == 2) 
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash, b.uploadTo FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=2 ORDER BY b.uploadFrom DESC';
+        selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash, b.uploadTo FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=2 AND a.userIdx=${userIdx} ORDER BY b.uploadFrom DESC`;
     else if (req.params.progress == 3)
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=3 ORDER BY b.uploadFrom DESC';
+        selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=3 ORDER BY b.uploadFrom DESC';
     else if (req.params.progress == 4)
-        selectUseradQuery = 'SELECT b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.adIdx WHERE a.progress=4 ORDER BY b.uploadFrom DESC';
+        selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=4 ORDER BY b.uploadFrom DESC';
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
-    const length = {length :selectUseradResult.length}
+    const length = {'length' : selectUseradResult.length}
     
     
     console.log(selectUseradResult)
@@ -65,7 +66,7 @@ router.get("/:progress", isLoggedin,async (req, res) => {
         }
     }
     selectUseradResult[selectUseradResult.length] = length;
-    // console.log(selectUseradResult)
+
     if (!selectUseradResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));
     else

@@ -72,39 +72,6 @@ router.get("/:progress", isLoggedin,async (req, res) => {
     
 });
 
-// router.get("/:progress/:flag", isLoggedin ,async (req, res) => {
-//     let selectUseradQuery;
-    
-//     switch(req.params.flag) {
-    
-//     case 0 :
-//         if (req.params.progress == 1) //
-//         selectUseradQuery = 'SELECT b.ad_idx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.ad_idx WHERE a.progress=1 ORDER BY a.uploadFrom DESC';
-//         else if (req.params.progress == 2) //
-//         selectUseradQuery = 'SELECT b.ad_idx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.ad_idx WHERE a.progress=2 ORDER BY a.uploadFrom DESC';
-//         else if (req.params.progress == 3) //지원금 활동
-//         selectUseradQuery = 'SELECT b.ad_idx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.ad_idx WHERE a.progress=3 ORDER BY a.uploadFrom DESC';
-//         else if (req.params.progress == 4)
-//         selectUseradQuery = 'SELECT b.ad_idx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.ad_idx WHERE a.progress=4 ORDER BY a.uploadFrom DESC';
-//     case 1 :
-//         if (req.params.progress == 1) //
-//                 selectUseradQuery = 'SELECT b.ad_idx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.ad_idx WHERE a.progress=1 ORDER BY a.createAt DESC';
-//             else if (req.params.progress == 2) //
-//                 selectUseradQuery = 'SELECT b.ad_idx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.ad_idx WHERE a.progress=2 ORDER BY a.createAt DESC';
-//             else if (req.params.progress == 3) //지원금 활동
-//                 selectUseradQuery = 'SELECT b.ad_idx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.ad_idx WHERE a.progress=3 ORDER BY a.createAt DESC';
-//             else if (req.params.progress == 4)
-//                 selectUseradQuery = 'SELECT b.ad_idx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.userAdIdx=b.ad_idx WHERE a.progress=4 ORDER BY a.createAt DESC';
-//         }
-//         const selectUseradResult = await db.queryParam_None(selectUseradQuery)
-
-//     if (!selectUseradResult)
-//         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
-//     else
-//         res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 정렬별 조회 성공", selectUseradResult));    // 작품 삭제 성공
-    
-// });
-
 router.get("/:progress/:idx", async (req, res) => {
     const selectUseradQuery = `SELECT * FROM Ad WHERE adIdx = ${req.params.idx}`
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
