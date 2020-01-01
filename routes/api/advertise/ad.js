@@ -164,17 +164,17 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
                            
     console.log(req.body);
     const {title, subtitle, cash, applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate
-    , preference, campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode }  = req.body;
+    , preference, campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, subscribers, subscribersNum }  = req.body;
     const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
 
     const insertAdQuery ="INSERT INTO Ad "
     + "(thumbnail,title,subtitle,cash,applyFrom,applyTo,choice,uploadFrom,uploadTo,completeDate,"
-    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,categoryCode,createAt) "
-    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,categoryCode,createAt,subscribers,subscribersNum) "
+    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     const insertAdResult = await  db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
         applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate,
     summaryPhoto, fullPhoto, preference, campaignInfo, url, 
-    reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YY.MM.DD')]);
+    reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YY.MM.DD')],subscribers,subscribersNum);
     
     if (!insertAdResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
@@ -186,14 +186,16 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
 
 
 //광고 조회
-router.get('/detail/:idx',async(req,res) => {
-    
+router.get('/detail/:idx',authUtils.isLoggedin, async(req,res) => {
     const getDetailQuery = 'SELECT * FROM Ad WHERE adIdx = ?'
     const getDetailResult = await db.queryParam_Parse(getDetailQuery,[req.params.idx]);
     
-
-     const updateViewsQuery = 'UPDATE Ad SET views = views+1 WHERE adIdx=?'
-     const updateViewsResult = await db.queryParam_Parse(updateViewsQuery,[req.params.idx]);
+    const getSubscribersQuery = 'SELECT * FROM User WHERE userIdx = ?'
+    const getSubscribersResult = await db.queryParam_Parse(getSubscribersQuery,[req.decoded.idx]);
+    const subscribers = getSubscribersResult[0]['subscribers']
+    console.log(subscribers)
+    const updateViewsQuery = 'UPDATE Ad SET views = views+1 WHERE adIdx=?'
+    const updateViewsResult = await db.queryParam_Parse(updateViewsQuery,[req.params.idx]);
 
     convert(getDetailResult[0]);
 
@@ -202,10 +204,11 @@ router.get('/detail/:idx',async(req,res) => {
     }else if(!updateViewsResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "조회수 수정 실패"));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 조회 성공",getDetailResult));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 조회 성공", {'ad': getDetailResult, 'subscribers': subscribers}));
     }
 
 });
+
 
 //신청하기 버튼 후 기획서 신청정보 가져오기
 router.get('/apply',authUtils.isLoggedin, async(req,res) => {
