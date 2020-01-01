@@ -40,7 +40,7 @@ router.put('/pick', async(req,res) => {
 });
 
 //관리자가 선택한 이미지 보여주기
-router.get('/random', async(req,res) => {
+router.get('/random', authUtils.isLoggedin,async(req,res) => {
 
  const resData =[];    
  const getHeaderQuery = "SELECT adIdx, thumbnail,applyTo,title,subtitle FROM Ad WHERE isPick = 1 order by rand() ";
@@ -105,7 +105,7 @@ router.get('/interest',authUtils.isLoggedin, async(req,res) => {
 });
 
 //광고 인기순
-router.get('/popular',async(req,res) => {
+router.get('/popular',authUtils.isLoggedin,async(req,res) => {
 
     const getPopularQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad ORDER BY views DESC'
     const getPopularResult = await db.queryParam_None(getPopularQuery);
@@ -119,7 +119,7 @@ router.get('/popular',async(req,res) => {
 });
 
 //광고 최신순 with d-day
-router.get('/latest',async (req,res) => {
+router.get('/latest',authUtils.isLoggedin,async (req,res) => {
 
     const getLatestQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad ORDER BY createAt DESC'
     const getLatestResult = await db.queryParam_None(getLatestQuery);
@@ -133,7 +133,7 @@ router.get('/latest',async (req,res) => {
 
 
 //카테고리 별 광고 with d-day
-router.get('/list/:flag',async (req,res) => {
+router.get('/list/:flag',authUtils.isLoggedin,async (req,res) => {
     
     const resData =[];
 
