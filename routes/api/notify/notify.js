@@ -15,7 +15,6 @@ const isLoggedin = require('../../../module/utils/authUtils').isLoggedin;
 */
 /* GET home page. */
 
-
 router.get("/", isLoggedin , async function(req, res, next) {
     //다 보여주기
 
@@ -27,21 +26,5 @@ router.get("/", isLoggedin , async function(req, res, next) {
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 공지사항 조회 성공", selectNoticeResult));    // 작품 삭제 성공
 });
-
-// const insertTransaction = await db.Transaction(async (connection) => {
-//     const updateClickResult = await connection.query(updateClickQuery, [selectSimpleResult[0].bonus, req.decoded.idx]);
-//     const insertBannerResult = await connection.query(insertBannerQuery, [req.body.banner_idx, req.decoded.idx]);
-
-// });
-// console.log("성공");
-// const insertNotificationResult = await db.queryParam_Arr(insertNotificationQuery,
-//     [req.decoded.idx, '2', 3, moment().format('YYYY-MM-DD HH:mm:ss')]);
-// const UpdateNotificationResult = await db.queryParam_Arr(UpdateNotificationQuery, [1, req.decoded.idx]);
-
-// if (!insertTransaction) {
-//     res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // DB 에러
-// } else {    // 성공할 경우
-//     res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.CLICK_POINT_BANNER));     // 배너 클릭 포인트 획득
-// }
 
 module.exports = router;

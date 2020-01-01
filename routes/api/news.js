@@ -25,42 +25,37 @@ DB 오류 뜰 때
     2. 라우팅 제대로 되었는지 확인하기
 */
 
-router.get('/:flag/:idx', isLoggedin, async (req, res) => { 
-    const {flag} = req.body;
-    const selectDailyQuery = `SELECT * FROM Daily WHERE dailyIdx=${idx}`;
-    
-    const selectNewsQuery = `SELECT * FROM News WHERE newsIdx=${idx}`;
-    const updateNewsQuery = `UPDATE News SET views = views+1 WHERE newsIdx=${idx}`;
-    
-    if (flag == 1) {//데일리 
-        const selectDailyResult = await db.queryParam_None(selectDailyQuery);
-        if (!selectDailyResult)
+router.get('/daily/:idx', isLoggedin, async (req, res) => { 
+    const {idx} = req.params.idx;
+    const selectDailyQuery = `SELECT * FROM DailyNews WHERE dailyIdx=${idx}`;
+    const selectDailyResult = await db.queryParam_None(selectDailyQuery);
+
+    if (!selectDailyResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "데일리 뉴스 조회 성공", selectDailyResult));    // 작품 삭제 성공 
-    }
-    else if (flag == 2) { //서포트
-        let selectNewsResult;
-        const selectTransaction = db.Transaction( async connection => {
-        const updateNewsResult = await db.queryParam_None(updateNewsQuery);
-        selectNewsResult = await db.queryParam_None(selectNewsQuery)
+});
+
+
+router.get('/support/:idx', isLoggedin, async (req, res) => { 
+    const selectNewsQuery = `SELECT * FROM SupportNews WHERE newsIdx=${idx}`;
+    const updateNewsQuery = `UPDATE SupportNews SET views = views+1 WHERE newsIdx=${idx}`;
+    
+    let selectNewsResult;
+    const selectTransaction = db.Transaction( async connection => {
+    const updateNewsResult = await db.queryParam_None(updateNewsQuery);
+    selectNewsResult = await db.queryParam_None(selectNewsQuery)
     });
+
     if (!selectTransaction)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공
-}
 
 })
 
-
-router.get('/:flag', isLoggedin ,async (req, res) => { 
-    let selectNewsQuery;
-    if (req.params.flag == 1) //데일리
-        selectNewsQuery = 'SELECT * FROM Daily WHERE ORDER BY createAt DESC';
-    else if (req.params.flag == 2) //서포트
-        selectNewsQuery = 'SELECT * FROM News ORDER BY calendarStart ASC';
-    
+router.get('/daily', isLoggedin ,async (req, res) => { 
+    const selectNewsQuery = 'SELECT * FROM DailyNews WHERE ORDER BY createAt DESC';
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
     if (!selectNewsResult)
@@ -69,12 +64,22 @@ router.get('/:flag', isLoggedin ,async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공
 })
 
-router.get('/recommand/:flag', isLoggedin,async (req, res) => { 
+router.get('/support', isLoggedin ,async (req, res) => { 
+    const selectNewsQuery = 'SELECT * FROM SupportNews ORDER BY calendarStart ASC';
+    const selectNewsResult = await db.queryParam_None(selectNewsQuery)
+
+    if (!selectNewsResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공
+})
+
+router.get('/recommand/:flag', isLoggedin, async (req, res) => { 
     let selectNewsQuery;
     if (req.params.flag == 0) //인기 뉴스
-        selectNewsQuery = 'SELECT * FROM News ORDER BY views DESC';
+        selectNewsQuery = 'SELECT * FROM SupportNews ORDER BY views DESC';
     else if (req.params.flag == 1) //최신 뉴스
-        selectNewsQuery = 'SELECT * FROM News ORDER BY calendarStart ASC';
+        selectNewsQuery = 'SELECT * FROM SupportNews ORDER BY calendarStart ASC';
     const selectNewsResult = await db.queryParam_None(selectNewsQuery);
 
     if (!insertNewsResult)
@@ -83,8 +88,8 @@ router.get('/recommand/:flag', isLoggedin,async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공 
 })
 
-router.post("/", upload.single('poster'), async (req, res) => {
-    const insertNewsQuery = 'INSERT INTO News (poster, category ,host, title, subtitle ,contents, calendarStart, calendarEnd ,createAt) VALUES (?,?,?,?,?,?,?,?,?)';
+router.post("/support", isLoggedin ,upload.single('poster'), async (req, res) => {
+    const insertNewsQuery = 'INSERT INTO SupportNews (poster, category ,host, title, subtitle ,contents, calendarStart, calendarEnd ,createAt) VALUES (?,?,?,?,?,?,?,?,?)';
     const insertNewsResult = await db.queryParam_Arr(insertNewsQuery, [req.file.location, req.body.category ,req.body.host, req.body.title, req.body.subtitle ,req.body.contents, req.body.calendarStart, req.body.calendarEnd ,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertNewsResult)
@@ -93,8 +98,8 @@ router.post("/", upload.single('poster'), async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
 });
 
-router.post("/daily", upload.single('thumbnail'), async (req, res) => {
-    const insertDailyQuery = 'INSERT INTO Daily (thumbnail, title ,subtitle, content, createAt) VALUES (?,?,?,?,?)';
+router.post("/daily", isLoggedin ,upload.single('thumbnail'), async (req, res) => {
+    const insertDailyQuery = 'INSERT INTO DailyNews (thumbnail, title ,subtitle, content, createAt) VALUES (?,?,?,?,?)';
     const insertDailyResult = await db.queryParam_Arr(insertDailyQuery, [req.file.location, req.body.title ,req.body.subtitle, req.body.content, ,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertDailyResult)
@@ -102,5 +107,17 @@ router.post("/daily", upload.single('thumbnail'), async (req, res) => {
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
 });
+
+router.post("/scrap", isLoggedin ,async (req, res) => {
+    const userIdx = req.decoded.idx;
+    const insertNewsQuery = `INSERT INTO UserNews (userIdx, newsIdx, isScrapped) VALUES (?,?,?)`;
+    const insertNewsResult = await db.queryParam_Arr(insertNewsQuery, [userIdx ,req.body.newsIdx, 1])
+
+    if (!insertNewsResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
+});
+
 module.exports = router;
 

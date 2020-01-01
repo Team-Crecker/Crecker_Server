@@ -36,7 +36,6 @@ router.get('/', isLoggedin, async (req, res) => {
 
 })
 
-
 router.get('/:idx', isLoggedin ,async (req, res) => { 
     const faqIdx = req.body.idx
     const selectFaqQuery = `SELECT * FROM Faq WHERE faqIdx=${faqIdx}`;

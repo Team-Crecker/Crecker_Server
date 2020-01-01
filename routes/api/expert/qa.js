@@ -25,10 +25,8 @@ const isLoggedin = require('../../../module/utils/authUtils').isLoggedin;
 
 /* GET home page. */
 
-router.get("/category/:category", isLoggedin ,async function(req, res) {//질문
-    //답변순, 등록순, 조회순
-    const category  = req.params.category;
-    const selectQaQuery = `SELECT expertConsultIdx, category, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE category = ${category} ORDER BY AnswerUpdateAt DESC `;
+router.get("/law", isLoggedin ,async function(req, res) {//질문
+    const selectQaQuery = `SELECT expertConsultIdx, categoryCode, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE categoryCode = '0201' ORDER BY AnswerUpdateAt DESC `;
 
     const selectQaResult = await db.queryParam_None(selectQaQuery)
     let resData = [];
@@ -88,11 +86,11 @@ router.get("/consulted", isLoggedin , async function(req, res) { // 상담 신�
 
 });
 
-router.get("/category/:category/:idx", isLoggedin ,async function(req, res) {
+router.get("/law/:idx", isLoggedin ,async function(req, res) {
     //질문 답변 개별 조회
-    const {category, idx}  = req.params; 
+    const {idx}  = req.params; 
 
-    const selectQaQuery = `SELECT b.expertConsultIdx, a.expertIdx, a.name, a.description, a.photo, b.category, b.Qtitle, b.Qcontent, b.Acontent ,b.isComplete, b.isSecret, b.views ,b.createAt, b.answerUpdateAt FROM Expert AS a JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.expertConsultIdx = ${idx};`
+    const selectQaQuery = `SELECT b.expertConsultIdx, a.expertIdx, a.name, a.description, a.photo, b.categoryCode, b.Qtitle, b.Qcontent, b.Acontent ,b.isComplete, b.isSecret, b.views ,b.createAt, b.answerUpdateAt FROM Expert AS a JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.expertConsultIdx = ${idx};`
     const updateQaQuery = `UPDATE ExpertConsult SET views = views +1 WHERE expertConsultIdx = ${idx}`;
     
     let selectQaResult;
@@ -109,16 +107,15 @@ router.get("/category/:category/:idx", isLoggedin ,async function(req, res) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 문의 정렬별 조회 성공", resData));    // 작품 삭제 성공
-
 });
 
 
-router.post("/", isLoggedin ,async function(req, res) {
+router.post("/", isLoggedin , async function(req, res) {
     // 질문하기
-    const {Qtitle, Qcontent, category, isSecret} = req.body;
+    const {Qtitle, Qcontent, categoryCode, isSecret} = req.body;
     const user = req.decoded.idx;
-    const insertQaQuery = 'INSERT INTO ExpertConsult (user,Qtitle,Qcontent,category,isSecret,createAt) VALUES (?, ?,?,?,?,?)'; //category 1 == Law
-    const insertQaResult = await db.queryParam_Arr(insertQaQuery, [user, Qtitle , Qcontent, category , isSecret,moment().format('YYYY-MM-DD HH:mm:ss') ])
+    const insertQaQuery = 'INSERT INTO ExpertConsult (user,Qtitle,Qcontent,categoryCode,isSecret,createAt) VALUES (?, ?,?,?,?,?)'; //category 1 == Law
+    const insertQaResult = await db.queryParam_Arr(insertQaQuery, [user, Qtitle , Qcontent, categoryCode , isSecret,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertQaResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
