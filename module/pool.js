@@ -3,6 +3,16 @@
 //dbConfig 파일을 확인해주세요
 const pool = require("../config/dbConfig");
 
+function nullToString(result) {
+  for (let key in result[0]) {
+    console.log(result[0][key])
+    if (result[0][key] === null) {
+      result[0][key] = ""
+    }
+  }
+  return result
+}
+
 module.exports = {
   // 두 개의 메소드 module화
   queryParam_None: async (...args) => {
@@ -13,6 +23,7 @@ module.exports = {
     try {
       var connection = await pool.getConnection(); // connection을 pool에서 하나 가져온다.
       result = (await connection.query(query)) || null; // query문의 결과 || null 값이 result에 들어간다.
+      result = nullToString(result)
     } catch (err) {
       connection.rollback(() => { });
       next(err);
@@ -29,6 +40,7 @@ module.exports = {
     try {
       var connection = await pool.getConnection(); // connection을 pool에서 하나 가져온다.
       result = (await connection.query(query, value)) || null; // 두 번째 parameter에 배열 => query문에 들어갈 runtime 시 결정될 value
+      result = nullToString(result)
     } catch (err) {
       connection.rollback(() => { });
       next(err);
@@ -41,10 +53,12 @@ module.exports = {
     const query = inputquery;
     const value = inputvalue;
     let result;
-    console.log(inputquery, inputvalue);
+    // console.log(inputquery, inputvalue);
     try {
       var connection = await pool.getConnection();
       result = (await connection.query(query, value)) || null;
+      result = nullToString(result)
+      // console.log(result[0]);
       //console.log("result:", result);
     } catch (err) {
       console.log(err);

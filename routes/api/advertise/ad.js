@@ -12,93 +12,91 @@ const authUtils = require('../../../module/utils/authUtils');
 const db = require('../../../module/pool');
 
 
-//광고 삽입
-router.post('/insert',upload.array('imgs'),async(req,res)=>{          
-                           
+//광고 헤더이미지 - 관리자가 선택하는 것
+router.put('/pick', async(req,res) => {
+
+    //pick으로 put시키면 자동으로?
+    //자동으로 isPick을 0으로 모두 초기화시킴
+    const updatePickQuery = 'UPDATE Ad SET isPick = 0'
+    const updatePickResult = await db.queryParam_None(updatePickQuery);
     
-    console.log(req.body);
-    const insertAdQuery ="INSERT INTO Ad "
-    + "(thumbnail,title,subtitle,cash,applyFrom,applyTo,choice,uploadFrom,uploadTo,completeDate,"
-    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,category,views,createAt) "
-    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    const insertAdResult = await  db.queryParam_Parse(insertAdQuery,[req.files[0].location, req.body.title, req.body.subtitle, req.body.cash, 
-        req.body.applyFrom, req.body.applyTo, req.body.choice, req.body.uploadFrom, req.body.uploadTo, req.body.completeDate,
-    req.files[1].location, req.files[2].location, req.body.preference, req.body.campaignInfo, req.body.url, 
-    req.body.reward, req.body.keyword, req.body.campaignMission, req.body.addInfo,req.body.category,req.body.views,moment().format('YYYY-MM-DD HH:mm:ss')]);
+    //관리자가 선택한 값을 1로 변경 
+    const putPickQuery = 'UPDATE Ad SET isPick = 1 WHERE adIdx = ?'
+    const putPickResult = await db.queryParam_Parse(putPickQuery,[req.body.adIdx]);
     
-    if (!insertAdResult){
+    // for(let i=0; i<req.body.select ; i++){
+    //     const updatePickQuery2 = 'UPDATE Ad SET isPick = 1 WHERE adIdx =? ';
+    //     const updatePickResult2 = await db.queryParam_Parse(updatePickQuery2,[req.body.select[i]]);
+    // };
+    
+
+    console.log(updatePickResult);
+    if (!updatePickResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",updatePickResult));
     }
 
-   
 });
 
-//광고 삽입-코드 정리
-router.post('/insert2',upload.array('imgs'),async(req,res)=>{          
-                           
-    
-    console.log(req.body);
-    const {title, subtitle, cash, applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate
-    , preference, campaignInfo, url, reward, keyword, campaignMission, addInfo, category, views }  = req.body;
-    const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
+//관리자가 선택한 이미지 보여주기
+router.get('/random', async(req,res) => {
 
-    const insertAdQuery ="INSERT INTO Ad "
-    + "(thumbnail,title,subtitle,cash,applyFrom,applyTo,choice,uploadFrom,uploadTo,completeDate,"
-    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,category,views,createAt) "
-    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    const insertAdResult = await  db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
-        applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate,
-    summaryPhoto, fullPhoto, preference, campaignInfo, url, 
-    reward, keyword, campaignMission, addInfo, category,views,moment().format('YYYY-MM-DD HH:mm:ss')]);
-    
-    if (!insertAdResult){
+    const GetHeaderQuery = "SELECT adIdx, thumbnail,applyTo,title,subtitle FROM Ad WHERE isPick = 1 order by rand() ";
+    const GetHeaderResult = await db.queryParam_Arr(GetHeaderQuery,[req.body.isPick]);
+
+    console.log(GetHeaderResult);
+    if (!GetHeaderResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",GetHeaderResult));
     }
 
-   
 });
 
-//광고 첫 화면 랜덤이미지 제공
-router.get('/random',async(req,res)=>{  
-    const resData={
-        thumbnail:"",
-        title:"",
-        subtitle:"",
-        dday:''
-    };
-    
-    const getAdQuery = "SELECT thumbnail,applyTo,title,subtitle FROM Ad order by rand() limit 1";
-    const getAdResult = await db.queryParam_None(getAdQuery);
 
-    resData.thumbnail = getAdResult[0].thumbnail;
-    resData.title = getAdResult[0].title;
-    resData.subtitle = getAdResult[0].subtitle;
-  
-    console.log(getAdResult[0].applyTo);
-     var t1 = moment(getAdResult[0].applyTo,'YYYY-MM-DD HH:mm');
-     var t2 = moment();
-  
-     let ddayfull = moment.duration(t2.diff(t1)).asDays();
-      //6.231323
-     let ddayfullstring = ddayfull.toString();
-
-     let dday  =   ddayfullstring.split(".");
+//광고 맞춤형 
+router.get('/interest',authUtils.isLoggedin, async(req,res) => {
     
-     resData.dday= dday[0];
+    console.log(req.decoded.typeAd);
+    const getInterestQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad WHERE categoryCode = ?'
+    const getInterestResult = await db.queryParam_Parse(getInterestQuery,[req.decoded.typeAd])
+
+     if (!getInterestResult){
+         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+     } else{
+     res.status(200).send(defaultRes.successTrue(statusCode.OK,"맞춤형 광고 성공", getInterestResult));
+     }
      
+});
 
-    if (!getAdResult){
+//광고 인기순
+router.get('/popular',async(req,res) => {
+
+    const getPopularQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad ORDER BY views DESC'
+    const getPopularResult = await db.queryParam_None(getPopularQuery);
+
+    if (!getPopularResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",resData));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"인기순 광고 성공",getPopularResult));
     }
-    
-   
+
 });
+
+//광고 최신순 with d-day
+router.get('/latest',async (req,res) => {
+
+    const getLatestQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad ORDER BY createAt DESC'
+    const getLatestResult = await db.queryParam_None(getLatestQuery);
+    
+    if (!getLatestResult){
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    } else{
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"최신순 광고 성공",getLatestResult));
+    }
+});
+
 
 //카테고리 별 광고 with d-day
 router.get('/list/:flag',async (req,res) => {
@@ -106,7 +104,7 @@ router.get('/list/:flag',async (req,res) => {
     const resData =[];
 
 
-    const getCategoryQuery = 'SELECT adIdx,thumbnail, applyTo, title, cash  FROM Ad WHERE category= ? ORDER BY applyTo ' 
+    const getCategoryQuery = 'SELECT adIdx,thumbnail, applyTo, title, cash  FROM Ad WHERE categoryCode= ? ORDER BY applyTo ' 
     const getCategoryResult = await db.queryParam_Parse(getCategoryQuery,[req.params.flag]);
  
   
@@ -134,87 +132,77 @@ router.get('/list/:flag',async (req,res) => {
     let ddayfullstring = ddayfull.toString();
 
     let dday  =   ddayfullstring.split(".");
-   
-    item.dday= dday[i];
+  
+    item.dday= Number(dday[0]);
+ 
+
     resData.push(item);
 
-    }
+    };
   
- 
     if (!getCategoryResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",resData));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"카테고리 광고 불러오기 성공",resData));
     }
     
 });
 
 
-//광고 최신순 with d-day
-router.get('/latest',async (req,res) => {
+const convert = element => {
+    element.applyFrom = moment(element.applyFrom).format('YY.MM.DD');
+    element.applyTo = moment(element.applyTo).format('YY.MM.DD');
+    element.choice = moment(element.choice).format('YY.MM.DD');
+    element.completeDate = moment(element.completeDate).format('YY.MM.DD');
+    element.uploadFrom = moment(element.uploadFrom).format('YY.MM.DD');
+    element.uploadTo = moment(element.uploadTo).format('YY.MM.DD');
 
-    const getLatestQuery = 'SELECT thumbnail, title, cash FROM Ad ORDER BY createAt DESC'
-    const getLatestResult = await db.queryParam_None(getLatestQuery);
+};
+
+//광고 삽입
+router.post('/insert',upload.array('imgs'),async(req,res)=>{          
+                           
+    console.log(req.body);
+    const {title, subtitle, cash, applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate
+    , preference, campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode }  = req.body;
+    const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
+
+    const insertAdQuery ="INSERT INTO Ad "
+    + "(thumbnail,title,subtitle,cash,applyFrom,applyTo,choice,uploadFrom,uploadTo,completeDate,"
+    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,categoryCode,createAt) "
+    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const insertAdResult = await  db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
+        applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate,
+    summaryPhoto, fullPhoto, preference, campaignInfo, url, 
+    reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YY.MM.DD')]);
     
-   
-    if (!getLatestResult){
+    if (!insertAdResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getLatestResult));
-    }
-});
-
-//광고 인기순
-router.get('/popular',async(req,res) => {
-
-    
-
-    const getPopularQuery = 'SELECT thumbnail, title, cash FROM Ad ORDER BY views DESC'
-    const getPopularResult = await db.queryParam_None(getPopularQuery);
-
-    if (!getPopularResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
-    } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getPopularResult));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
     }
 
-});
-
-
-//광고 맞춤형 
-router.get('/interest',authUtils.isLoggedin, async(req,res) => {
-    
-    console.log(req.decoded.typeAd);
-    const getInterestQuery = 'SELECT thumbnail, title, cash FROM Ad WHERE category = ?'
-    const getInterestResult = await db.queryParam_Parse(getInterestQuery,[req.decoded.typeAd])
-
-     if (!getInterestResult){
-         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
-     } else{
-     res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getInterestResult));
-     }
-    
-    
-    
 });
 
 
 //광고 조회
 router.get('/detail/:idx',async(req,res) => {
-
-
+    
     const getDetailQuery = 'SELECT * FROM Ad WHERE adIdx = ?'
     const getDetailResult = await db.queryParam_Parse(getDetailQuery,[req.params.idx]);
-  
+    
 
      const updateViewsQuery = 'UPDATE Ad SET views = views+1 WHERE adIdx=?'
      const updateViewsResult = await db.queryParam_Parse(updateViewsQuery,[req.params.idx]);
+
+    convert(getDetailResult[0]);
+
     if (!getDetailResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "디테일 조회 DB 실패"));
     }else if(!updateViewsResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "조회수 수정 실패"));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getDetailResult));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 조회 성공",getDetailResult));
     }
 
 });
@@ -227,28 +215,43 @@ router.get('/apply',authUtils.isLoggedin, async(req,res) => {
     if (!getApplyResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS",getApplyResult));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"기획서 가져오기 성공",getApplyResult));
     }
     
 });
 
 //기획서 내용 입력
-router.post('/write', async(req,res) => {
+router.post('/write', authUtils.isLoggedin ,async(req,res) => {
     console.log(req.body);
-    const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl) VALUES(?,?,?,?,?,?,?,?)'
-    const getWriteResult = await db.queryParam_Parse(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl]);
-
-    if (!getWriteResult){
+    
+    const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl,isAgree) VALUES(?,?,?,?,?,?,?,?,?)'
+    const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, progress) VALUES (?,?,?)';
+    
+    const writeTransaction = db.Transaction(async connection => {
+        const getWriteResult = await connection.query(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl,req.body.isAgree]);
+        const postWriteResult = await connection.query(postWriteQuery,[req.decoded.idx, req.body.adIdx, 1]);
+    })
+    
+    if (!writeTransaction){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"기획서 작성 성공"));
     }
     
     
 });
 
 
+
+
 //post는 body get은 params쓰라!
+
+    // GET -문자열 url로 받으니까 
+    // POST - 이미지
+
+
+    // 문자열 
+    // 이미지 
 
 module.exports = router;
 
