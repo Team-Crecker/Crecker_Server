@@ -186,15 +186,12 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
 
 
 //광고 조회
-router.get('/detail/:idx',authUtils.isLoggedin,async(req,res) => {
-    
+router.get('/detail/:idx',authUtils.isLoggedin, async(req,res) => {
     const getDetailQuery = 'SELECT * FROM Ad WHERE adIdx = ?'
     const getDetailResult = await db.queryParam_Parse(getDetailQuery,[req.params.idx]);
     
     const getSubscribersQuery = 'SELECT * FROM User WHERE userIdx = ?'
-    const getSubscribersResult = await db.queryParam_Parse(getDetailQuery,[req.decoded.idx]);
-
-    // console.log(getSubscribersResult);
+    const getSubscribersResult = await db.queryParam_Parse(getSubscribersQuery,[req.decoded.idx]);
     const subscribers = getSubscribersResult[0]['subscribers']
     console.log(subscribers)
     const updateViewsQuery = 'UPDATE Ad SET views = views+1 WHERE adIdx=?'
@@ -207,7 +204,7 @@ router.get('/detail/:idx',authUtils.isLoggedin,async(req,res) => {
     }else if(!updateViewsResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "조회수 수정 실패"));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 조회 성공",getDetailResult));
+    res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 조회 성공", {'ad': getDetailResult, 'subscribers': subscribers}));
     }
 
 });
