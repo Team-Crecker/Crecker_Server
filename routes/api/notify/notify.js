@@ -17,8 +17,8 @@ const isLoggedin = require('../../../module/utils/authUtils').isLoggedin;
 
 router.get("/", isLoggedin , async function(req, res, next) {
     //다 보여주기
-
-    const selectNoticeQuery = `SELECT * FROM Notification WHERE userIdx = ${req.decoded.idx}`;
+    console.log(req.body);
+    const selectNoticeQuery = `SELECT * FROM Notification WHERE userIdx = ${req.decoded.idx} ORDER BY createAt`;
     const selectNoticeResult = await db.queryParam_None(selectNoticeQuery);
 
     if (!selectNoticeResult)
