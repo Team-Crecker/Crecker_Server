@@ -117,6 +117,22 @@ router.get("/:progress/:idx", async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공", selectUseradResult));    // 작품 삭제 성공 
 });
 
+router.post("/confirm/", async (req, res) => {
+    const idx = req.body.idx;
+    const adIdx = req.body.adIdx
+    // const confirmQuery = `UPDATE INTO UserAd as a (progress) VALUES (?) JOIN a. WHERE `
+    // INSERT NOTIFICATION 
+
+});
+
+router.post("/notConfirm/", async (req, res) => {
+    const idx = req.body.idx;
+    const adIdx = req.body.adIdx
+    
+    // INSERT NOTIFICATION 
+    // 광고가 배정되지 않았습니다.
+});
+
 router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
     const {thumbnails, publishedAt, viewCount, likeCount} = req.youtubeData;
     const {adIdx ,url, review} = req.body;
@@ -142,5 +158,19 @@ router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공")); 
 })
+
+router.get('/ing', async (req, res) => {
+    // SELECT UserAd에서 progress=3인것만 리스트로 보여주면 됨
+    // UserAd idx, Adidx, Useridx, 
+})
+
+router.post('/ing', async (req, res) => {
+    // Update UserAd에서 progress=3인것을 4로 바꾸는 로직
+    const idx = req.body.idx;
+    const adIdx = req.body.adIdx
+    // UserAd의 progress=4로 바꿔줌
+    // User.cash += Ad.price
+    // 리워드가 적립되었습니다. cash를 확인해보세요
+});
 
 module.exports = router;

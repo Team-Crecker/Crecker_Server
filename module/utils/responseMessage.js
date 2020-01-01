@@ -40,5 +40,10 @@ module.exports = {
   SELECT_USER_AD_FAILED: "유저 광고 조회 실패",
   SELECT_USER_AD_ONE_SUCCESS: "유저 광고 개별 조회 성공",
   SELECT_USER_AD_ONE_FAILED: "유저 광고 개별 조회 실패",
+
+  DB_ERROR: "DB 오류",
+  PERSONAL_REPORT_SUCCESS: "개별 리포트 조회 성공",
+  CASH_HISOTRY_SCUEESS: "이용내역 조회 성공",
+  CASH_WITHDRAW_SCUEESS: "인출하기 성공",
 }
  

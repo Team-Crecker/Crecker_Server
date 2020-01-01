@@ -5,7 +5,6 @@ const pool = require("../config/dbConfig");
 
 function nullToString(result) {
   for (let key in result[0]) {
-    console.log(result[0][key])
     if (result[0][key] === null) {
       result[0][key] = ""
     }
@@ -32,6 +31,7 @@ module.exports = {
       return result;
     }
   },
+
   queryParam_Arr: async (...args) => {
     const query = args[0];
     const value = args[1]; // array

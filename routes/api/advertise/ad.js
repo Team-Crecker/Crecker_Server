@@ -42,7 +42,7 @@ router.put('/pick', async(req,res) => {
 //관리자가 선택한 이미지 보여주기
 router.get('/random', async(req,res) => {
 
-    const GetHeaderQuery = "SELECT adIdx, thumbnail,applyTo,title,subtitle FROM Ad WHERE isPick = 1 order by rand() ";
+    const GetHeaderQuery = "SELECT adIdx, thumbnail,applyTo,title,subtitle FROM Ad WHERE isPick = 1 order by rand()";
     const GetHeaderResult = await db.queryParam_Arr(GetHeaderQuery,[req.body.isPick]);
 
     console.log(GetHeaderResult);
@@ -56,7 +56,7 @@ router.get('/random', async(req,res) => {
 
 
 //광고 맞춤형 
-router.get('/interest',authUtils.isLoggedin, async(req,res) => {
+router.get('/interest', authUtils.isLoggedin, async(req,res) => {
     
     console.log(req.decoded.typeAd);
     const getInterestQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad WHERE categoryCode = ?'
@@ -162,26 +162,28 @@ const convert = element => {
 //광고 삽입
 router.post('/insert',upload.array('imgs'),async(req,res)=>{          
                            
-    console.log(req.body);
+    // console.log(req.body);
     const {title, subtitle, cash, applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate
     , preference, campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, subscribers, subscribersNum }  = req.body;
     const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
-
-    const insertAdQuery ="INSERT INTO Ad "
-    + "(thumbnail,title,subtitle,cash,applyFrom,applyTo,choice,uploadFrom,uploadTo,completeDate,"
-    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,categoryCode,createAt,subscribers,subscribersNum) "
-    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    const insertAdResult = await  db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
+    console.log(title)
+    console.log(thumbnail)
+    const insertAdQuery =`INSERT INTO Ad thumbnail, title, subtitle, cash, applyFrom, applyTo,
+    choice, uploadFrom, uploadTo, completeDate, summaryPhoto, fullPhoto, preference,
+    campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, createAt, subscribers, subscribersNum 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const insertAdResult = await db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
         applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate,
     summaryPhoto, fullPhoto, preference, campaignInfo, url, 
-    reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YY.MM.DD')],subscribers,subscribersNum);
-    
+    reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YY.MM.DD'),subscribers,subscribersNum]);
+
+    console.log(insertAdResult);
+
     if (!insertAdResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
     }
-
 });
 
 
