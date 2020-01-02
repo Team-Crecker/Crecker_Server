@@ -30,10 +30,11 @@ router.get('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 �
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_INTEREST_SUCCESS,  selectUserResult))
 })
-router.put('/', authUtil.isLoggedin ,async (req, res) => {
+router.put('/', authUtil.isLoggedin , upload.single('profileImage') ,async (req, res) => {
     const {phone, location} = req.body;
+    const profileImage = req.file.location || 'https://crecker1.s3.ap-northeast-2.amazonaws.com/default_image.png';
     const idx = req.decoded.idx
-    const updateUserQuery = `UPDATE User SET phone='${phone}', location='${location}'  WHERE userIdx = ${idx}`;
+    const updateUserQuery = `UPDATE User SET profileImage = '${profileImage}' ,phone='${phone}', location='${location}'  WHERE userIdx = ${idx}`;
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 
     if (!updateUserResult)
@@ -53,15 +54,3 @@ router.put('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 �
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.UPDATE_USER_INTEREST_SUCCESS))
 })
 
-router.put('/profileImage', authUtil.isLoggedin, upload.single('profileImage') ,async (req, res) => { //관심사 디비 수정 요망
-    const profileImage = req.file.location;
-    const idx = req.decoded.idx
-    const updateUserQuery = `UPDATE User SET profileImage = '${profileImage}' WHERE userIdx = ${idx}`;
-    const updateUserResult = await db.queryParam_None(updateUserQuery);
-
-    if (!updateUserResult)
-        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)) 
-    else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.UPDATE_USER_IMAGE_SUCCESS))
-})
-module.exports = router;
