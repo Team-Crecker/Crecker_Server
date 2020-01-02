@@ -15,10 +15,20 @@ const isLoggedin = require('../../../module/utils/authUtils').isLoggedin;
 */
 /* GET home page. */
 
-router.get("/", isLoggedin , async function(req, res, next) {
+router.get("/", isLoggedin , async function(req, res) {
     //다 보여주기
-    console.log(req.body);
     const selectNoticeQuery = `SELECT * FROM Notification WHERE userIdx = ${req.decoded.idx} ORDER BY createAt`;
+    const selectNoticeResult = await db.queryParam_None(selectNoticeQuery);
+
+    if (!selectNoticeResult)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_NOTIFICATION_SUCCESS, selectNoticeResult));    // 작품 삭제 성공
+});
+
+router.get("/length", isLoggedin , async function(req, res) {
+    //다 보여주기
+    const selectNoticeQuery = `SELECT * FROM Notification WHERE userIdx = ${req.decoded.idx} AND isRead = 0 ORDER BY createAt`;
     const selectNoticeResult = await db.queryParam_None(selectNoticeQuery);
 
     if (!selectNoticeResult)

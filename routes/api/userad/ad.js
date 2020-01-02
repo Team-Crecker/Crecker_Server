@@ -53,7 +53,7 @@ router.get("/:progress/length", isLoggedin, async (req, res) => {
         selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=4 ORDER BY b.uploadFrom DESC';
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
     const length = {'length' : selectUseradResult.length}
-    
+    //get 한번에 4개
     
     console.log(selectUseradResult)
     if (req.params.progress == 2) {
@@ -85,6 +85,17 @@ router.get("/:progress", isLoggedin, async (req, res) => {
     else if (req.params.progress == 4)
         selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=4 ORDER BY b.uploadFrom DESC';
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
+
+    console.log(selectUseradResult)
+    if (req.params.progress == 2) {
+        for (var element of selectUseradResult) { //모멘트값 일자까지
+            const isWarn = alerm(element);
+            if (isWarn)
+                element.isWarn = 1;
+            else
+                element.isWarn = 0;
+        }
+    }
 
     if (!selectUseradResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
@@ -127,7 +138,7 @@ router.get("/:progress", isLoggedin, async (req, res) => {
 // });
 
 router.get("/:progress/:idx", async (req, res) => {
-    const selectUseradQuery = `SELECT * FROM Ad WHERE adIdx = ${req.params.idx}`
+    const selectUseradQuery = `SELECT * FROM Ad WHERE adIdx = ${req.params.idx}` //개별 인덱스 똑바로 가져오게 수정 요망
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     if (!selectUseradResult)
@@ -164,7 +175,7 @@ router.post("/notConfirm/", async (req, res) => {
     // INSERT NOTIFICATION 
     // 광고가 배정되지 않았습니다.
 });
-
+//썸네일 전달 해주는 GET 파기, 날짜 형식 : 2019/ 12/ 25
 router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
     const {thumbnails, publishedAt, viewCount, likeCount} = req.youtubeData;
     const {adIdx ,url, review} = req.body;

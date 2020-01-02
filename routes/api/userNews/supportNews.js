@@ -43,7 +43,8 @@ router.get("/", isLoggedin, async (req, res) => {
 });
 
 router.get("/:idx", isLoggedin ,async (req, res) => {
-    const selectUseradQuery = `SELECT * FROM SupportNews WHERE newsIdx = ${req.params.idx}`
+    const userIdx = req.decoded.idx;
+    const selectUseradQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE a.userIdx=${userIdx} AND a.isScrapped = 1 AND a.newsIdx = ${req.params.idx}`
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     if (!selectUseradResult)
