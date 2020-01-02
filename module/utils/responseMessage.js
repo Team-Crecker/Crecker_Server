@@ -27,8 +27,12 @@ module.exports = {
   INSERT_EXPERT_PROFILE_SUCCESS: "전문가 프로필 입력 성공",
   INSERT_EXPERT_PROFILE_FAILED: "전문가 프로필 입력 실패",
 
-  SELECT_EXPERT_CONSULT_SUCCESS: "상담프로세스 조회 성공",
-  SELECT_EXPERT_CONSULT_FAILED: "상담프로세스 조회 실패", 
+  SELECT_EXPERT_QUESTION_SUCCESS: "질문 조회 성공",
+  SELECT_EXPERT_QUESTION_FAILED: "질문 조회 실패",
+  SELECT_EXPERT_ANSWER_SUCCESS: "답변 조회 성공",
+  SELECT_EXPERT_ANSWER_FAILED: "답변 조회 실패", 
+  SELECT_EXPERT_CONSULT_SUCCESS: "상담 조회 성공",
+  SELECT_EXPERT_CONSULT_FAILED: "상담 조회 실패",  
   INSERT_EXPERT_QUESTION_SUCCESS: "질문 등록 성공",
   INSERT_EXPERT_QUESTION_FAILED: "질문 등록 실패", 
   INSERT_EXPERT_ANSWER_SUCCESS: "답변 등록 성공",
@@ -78,7 +82,13 @@ module.exports = {
   SELECT_NOTICE_SUCCESS: '공지사항 조회 성공',
   SELECT_NOTICE_FAILED: '공지사항 조회 실패',
   INSERT_NOTICE_SUCCESS: '공지사항 등록 성공',
-  INSERT_NOTICE_FAILED: '공지사항 등록 실패'
+  INSERT_NOTICE_FAILED: '공지사항 등록 실패',
+
+  SELECT_SUPPORTNEWS_SUCCESS: '서포트 뉴스 조회 성공',
+  SELECT_SUPPORTNEWS_FAILED: '서포트 뉴스 조회 실패',
+  INSERT_SUPPORTNEWS_SUCCESS: '서포트 뉴스 등록 성공',
+  INSERT_SUPPORTNEWS_FAILED: '서포트 뉴스 등록 실패',
+  
 
 
 }

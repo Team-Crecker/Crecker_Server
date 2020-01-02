@@ -30,9 +30,9 @@ router.get('/', isLoggedin, async (req, res) => {
     const selectFaqResult = await db.queryParam_None(selectFaqQuery)
 
     if (!selectFaqResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "FAQ 전체 조회 성공", selectFaqResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_FAQ_SUCCESS, selectFaqResult));    // 작품 삭제 성공
 
 })
 
@@ -42,9 +42,9 @@ router.get('/:idx', isLoggedin ,async (req, res) => {
     const selectFaqResult = await db.queryParam_None(selectFaqQuery)
 
     if (!selectNewsResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "FAQ 개별 조회 성공", selectFaqResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_FAQ_SUCCESS, selectFaqResult));    // 작품 삭제 성공
 })
 
 router.post("/", async (req, res) => {
@@ -52,9 +52,9 @@ router.post("/", async (req, res) => {
     const insertFaqResult = await db.queryParam_Arr(insertFaqQuery, [req.body.title,req.body.content,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertFaqResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "FAQ 입력 성공"));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.INSERT_FAQ_SUCCESS));    // 작품 삭제 성공
 });
 
 module.exports = router;

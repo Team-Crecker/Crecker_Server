@@ -58,9 +58,9 @@ router.get("/", isLoggedin, async (req, res) => {
     selectUseradResult[selectUseradResult.length] = length;
 
     if (!selectUseradResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 조회 성공", selectUseradResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, selectUseradResult));
     
 });
 
@@ -69,9 +69,9 @@ router.get("/:idx", isLoggedin ,async (req, res) => {
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     if (!selectUseradResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공", selectUseradResult));    // 작품 삭제 성공 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, selectUseradResult));    // 작품 삭제 성공 
 });
 
 module.exports = router;

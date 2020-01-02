@@ -22,9 +22,9 @@ router.get("/", isLoggedin , async function(req, res, next) {
     const selectNoticeResult = await db.queryParam_None(selectNoticeQuery);
 
     if (!selectNoticeResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 공지사항 조회 성공", selectNoticeResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_NOTIFICATION_SUCCESS, selectNoticeResult));    // 작품 삭제 성공
 });
 
 module.exports = router;
