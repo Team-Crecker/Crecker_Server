@@ -9,14 +9,6 @@ const statusCode = require("../../module/utils/statusCode");
 const resMessage = require("../../module/utils/responseMessage");
 const db = require("../../module/pool");
 const isLoggedin = require('../../module/utils/authUtils').isLoggedin;
-/*   
-    idx
-    제목
-    내용(string)
-    private(0,1)
-    createAt
-*/
-/* GET home page. */
 /*
 DB 오류 뜰 때
     ? 개수
@@ -101,15 +93,6 @@ router.post("/support", isLoggedin ,upload.single('poster'), async (req, res) =>
 router.post("/daily" , upload.single('thumbnail'), async (req, res) => {
     const insertDailyQuery = 'INSERT INTO DailyNews (thumbnail, title ,subtitle, content, createAt) VALUES (?,?,?,?,?)';
     const insertDailyResult = await db.queryParam_Arr(insertDailyQuery, [req.file.location, req.body.title ,req.body.subtitle, req.body.content, ,moment().format('YYYY-MM-DD HH:mm:ss') ])
-
-    // const selectDailyQuery = `SELECT dailyIdx FROM DailyNews WHERE thumbnail = '${req.file.location}'`;
-    // const selectDailyResult = await db.queryParam_None(selectDailyQuery);
-
-    // const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
-    // const selectNotifyQuery = `SELECT thumbnail FROM DailyNews WHERE dailyIdx=${selectDailyResult[0].dailyIdx}`;
-    // const selectNotifyResult = await db.queryParam_None(selectNotifyQuery);
-    
-    // const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, ['0301', '데일리 뉴스가 업데이트 되었습니다', selectNotifyResult[0].thumbnail, req.decoded.idx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
 
     if (!insertDailyResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
