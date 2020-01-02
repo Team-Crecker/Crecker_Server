@@ -30,7 +30,7 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
     for (let elem of historyResult) {
         const title = elem['title']
         let isIn = parseInt(elem['isIn'])
-        isIn = isIn == 0 ? "출금" : "입금" 
+        isIn = isIn == 0 ? "출금" : "적립" 
         const price = parseInt(elem['price'])
         const date = elem['date']
         const data = {'title': title, 'isIn': isIn, 'price': price, 'date': date}
