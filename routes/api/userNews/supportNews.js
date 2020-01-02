@@ -29,38 +29,16 @@ const authVideo = require('../../../module/youtube').authVideo
  -> /userad/2(배정)/:useradIdx/auth
  -> POST
 */
-const alerm = element => {
-    moment.locale('ko');
-    const nowDate = moment();
-    const warn = moment.duration(moment(element.uploadTo).diff(nowDate)).asDays();
-    if(warn <= 1)    
-        return true;
-    else    
-        return false;
-}
 
 router.get("/", isLoggedin, async (req, res) => {
     const userIdx = req.decoded.idx;
-    const selectUseradQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE a.userIdx=${userIdx} AND a.isScrapped = 1 ORDER BY b.calendarEnd DESC`
-    const selectUseradResult = await db.queryParam_None(selectUseradQuery)
-    const length = {length :selectUseradResult.length}
-    
-    console.log(selectUseradResult)
-    if (req.params.progress == 2) {
-        for (var element of selectUseradResult) {
-            const isWarn = alerm(element);
-            if (isWarn)
-                element.isWarn = 1;
-            else
-                element.isWarn = 0;
-        }
-    }
-    selectUseradResult[selectUseradResult.length] = length;
+    const selectUserNewsQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE a.userIdx=${userIdx} AND a.isScrapped = 1 ORDER BY b.calendarEnd DESC`
+    const selectUserNewsResult = await db.queryParam_None(selectUserNewsQuery)
 
-    if (!selectUseradResult)
+    if (!selectUserNewsResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, selectUseradResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, selectUserNewsResult));
     
 });
 

@@ -32,9 +32,9 @@ router.get("/law", isLoggedin ,async function(req, res) {//질문
     const selectQaResult = await db.queryParam_None(selectQaQuery)
     let resData = [];
     resData = selectQaResult.map(element => {
-        return {...element, 'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
+        return {...element, 'createAt' : parseInt(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : parseInt(moment(element.answerUpdateAt).format('YYMMDD'))}
     })
-    
+    console.log(resData);
     if (!selectQaResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)); // 작품 삭제 실패
     else if (resData.length == 0)
@@ -45,7 +45,7 @@ router.get("/law", isLoggedin ,async function(req, res) {//질문
 
 router.get("/posted", isLoggedin , async function(req, res) { //내 질문
     const userIdx = req.decoded.idx;    
-    const selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE user = ${userIdx} AND isComplete IS NULL ORDER BY views DESC`;
+    const selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE userIdx = ${userIdx} AND isComplete IS NULL ORDER BY views DESC`;
 
     const selectQaResult = await db.queryParam_None(selectQaQuery)
 
@@ -58,7 +58,7 @@ router.get("/posted", isLoggedin , async function(req, res) { //내 질문
 
 router.get("/answered", isLoggedin ,async function(req, res) { //내 답변
     const userIdx = req.decoded.idx;    
-    const selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent,isComplete, isSecret, views , createAt, answerUpdateAt FROM ExpertConsult WHERE user = ${userIdx} AND isComplete IS NOT NULL ORDER BY views DESC`;
+    const selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent,isComplete, isSecret, views , createAt, answerUpdateAt FROM ExpertConsult WHERE userIdx = ${userIdx} AND isComplete IS NOT NULL ORDER BY views DESC`;
 
     const selectQaResult = await db.queryParam_None(selectQaQuery)
 
@@ -77,7 +77,7 @@ router.get("/consulted", isLoggedin , async function(req, res) { // 상담 신�
     
     let resData = [];
     resData = selectQaResult.map(element => {
-        return {...element, 'Cdate': moment(element.Cdate).format('YY.MM.DD AHH')}
+        return {...element, 'Cdate': moment(element.Cdate).format('YYYYMM')}
     })
 
     if (!selectQaResult)
@@ -113,10 +113,10 @@ router.get("/law/:idx", isLoggedin ,async function(req, res) {
 
 router.post("/law", isLoggedin , async function(req, res) {
     // 질문하기
-    const {Qtitle, Qcontent, categoryCode, isSecret} = req.body;
-    const user = req.decoded.idx;
+    const {Qtitle, Qcontent, isSecret} = req.body;
+    const userIdx = req.decoded.idx;
     const insertQaQuery = 'INSERT INTO ExpertConsult (userIdx ,Qtitle,Qcontent,categoryCode,isSecret,createAt) VALUES (?, ?,?,?,?,?)'; //category 1 == Law
-    const insertQaResult = await db.queryParam_Arr(insertQaQuery, [user, Qtitle , Qcontent, categoryCode , isSecret,moment().format('YYYY-MM-DD HH:mm:ss') ])
+    const insertQaResult = await db.queryParam_Arr(insertQaQuery, [userIdx, Qtitle , Qcontent, '0201' , isSecret,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertQaResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
@@ -127,13 +127,13 @@ router.post("/law", isLoggedin , async function(req, res) {
 
 router.put("/law" , async (req, res) => {
     // 전문가 답변
-    const {expertConsultIdx, Acontent, isComplete, expertIdx} = req.body;
+    const {expertConsultIdx, Acontent, expertIdx} = req.body;
     const updateQaQuery = `UPDATE ExpertConsult SET Acontent = ?, isComplete = ?, answerUpdateAt = ?, expertIdx= ? WHERE expertConsultIdx=?`; // 답변 완료
-    const updateQaResult = await db.queryParam_Arr(updateQaQuery, [Acontent, isComplete, moment().format('YYYY-MM-DD HH:mm:ss'), expertIdx ,expertConsultIdx]);
+    const updateQaResult = await db.queryParam_Arr(updateQaQuery, [Acontent, 1, moment().format('YYYY-MM-DD HH:mm:ss'), expertIdx ,expertConsultIdx]);
     
     const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
     const selectExpertQuery = `SELECT categoryCode, photo FROM Expert WHERE expertIdx=${expertIdx}`;
-    const selectUserQuery = `SELECT userIdx FROM expertConsult WHERE expertConsultIdx = ${expertConsultIdx}`
+    const selectUserQuery = `SELECT userIdx FROM ExpertConsult WHERE expertConsultIdx = ${expertConsultIdx}`
     const selectUserResult = await db.queryParam_None(selectUserQuery);
     const selectExpertResult = await db.queryParam_None(selectExpertQuery);
     
