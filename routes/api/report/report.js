@@ -13,18 +13,33 @@ const common = require("../../../module/common");
 router.get('/', authUtil.isLoggedin, async (req, res) => {
     // 개별 리포트 토탈
     const idx = req.decoded.idx
-    console.log(idx);
-    const selectPersonalReportQuery = `SELECT a.userAdIdx, b.title, b.companyName, d.likes, d.views1 FROM UserAd as a
+    
+    let resData = []
+
+
+    const selectPersonalReportQuery = `SELECT a.userAdIdx, b.title, b.companyName, d.likes, d.views1, b.categoryCode FROM UserAd as a
     JOIN Ad as b ON a.adIdx=b.adIdx
     JOIN User as c ON a.userIdx=c.userIdx
     JOIN VideoInfo as d ON a.videoInfoIdx=d.videoInfoIdx
     WHERE a.progress=4 ORDER BY b.uploadFrom DESC;`;
 
     const selectPersonalReportResult = await db.queryParam_None(selectPersonalReportQuery)
+    console.log(selectPersonalReportResult)
+    for (elem of selectPersonalReportResult) {
+        const userAdIdx = elem['userAdIdx']
+        const title = elem['title']
+        const companyName = elem['companyName']
+        const likes = elem['likes']
+        const views1 = elem['views1']
+        const categoryName = common.changeENGName(elem['categoryCode'])
+        resData.push({'userAdIdx': userAdIdx, 'title': title, 'companyName': companyName, 'likes': likes, 'views1': views1, 'categoryName': categoryName})
+    }
+
+    // resData.push({'userAdIdx': userAdIdx, 'title': title, 'companyName': companyName, 'likes': likes, 'views1': views1, 'categoryName': categoryName})
     if (!selectPersonalReportResult) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else {
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.PERSONAL_REPORT_SUCCESS, selectPersonalReportResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.PERSONAL_REPORT_SUCCESS, resData));
     }
 })
 
@@ -75,7 +90,7 @@ router.get('/info', authUtil.isLoggedin, async (req, res) => {
         const sum = selectTop3Result[0]['sum']
         const counts = selectTop3Result[0]['counts']
         const views = (sum / counts).toFixed(1)
-        resData['top'].push({'name': common.changeENGName(categoryCode), 'views': views === 'NaN' ? 0 : parseInt(views) })
+        resData['top'].push({'name': common.changeKRName(categoryCode), 'views': views === 'NaN' ? 0 : parseInt(views) })
     }
     resData['top'].sort(function(a, b) {
         return b['views'] - a['views'];
