@@ -32,7 +32,7 @@ router.get("/law", isLoggedin ,async function(req, res) {//질문
     const selectQaResult = await db.queryParam_None(selectQaQuery)
     let resData = [];
     resData = selectQaResult.map(element => {
-        return {...element, 'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
+        return {...element, 'createAt' : Int(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : Int(moment(element.answerUpdateAt).format('YYMMDD'))}
     })
     
     if (!selectQaResult)
@@ -77,7 +77,7 @@ router.get("/consulted", isLoggedin , async function(req, res) { // 상담 신�
     
     let resData = [];
     resData = selectQaResult.map(element => {
-        return {...element, 'Cdate': (element.Cdate == '0000-00-00 00:00:00') ? 0 : moment(element.Cdate).format('YYYYMM')}
+        return {...element, 'Cdate': moment(element.Cdate).format('YYYYMM')}
     })
 
     if (!selectQaResult)
@@ -137,7 +137,6 @@ router.put("/law" , async (req, res) => {
     const selectUserResult = await db.queryParam_None(selectUserQuery);
     const selectExpertResult = await db.queryParam_None(selectExpertQuery);
     
-    console.log(selectUserResult)
     const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [selectExpertResult[0].categoryCode, notifyMessage.ANSWERED, selectExpertResult[0].photo, selectUserResult[0].userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
 
 
