@@ -138,9 +138,9 @@ const convert = element => {
 };
 
 router.get("/:progress/:idx", isLoggedin,async (req, res) => {
-    const {progress} = req.params;
+    const {progress, idx} = req.params;
     const userIdx = req.decoded.idx;
-    const selectUseradQuery = `SELECT * FROM UserAd as a JOIN Ad as b ON a.adIdx = b.adIdx WHERE a.progress=${progress} AND a.userAdIdx = ${req.params.idx} AND a.userIdx=${userIdx}` //개별 인덱스 똑바로 가져오게 수정 요망
+    const selectUseradQuery = `SELECT * FROM UserAd as a JOIN Ad as b ON a.adIdx = b.adIdx WHERE a.progress=${progress} AND a.userAdIdx = ${idx} AND a.userIdx=${userIdx}` //개별 인덱스 똑바로 가져오게 수정 요망
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     let resData = selectUseradResult.map(convert);
