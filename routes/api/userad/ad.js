@@ -221,7 +221,7 @@ router.put('/ing/', async (req, res) => {
 
     const selectCashQuery = `SELECT categoryCode,cash,thumbnail FROM Ad WHERE adIdx = ${adIdx}`;
     const selectCashResult = await db.queryParam_None(selectCashQuery);
-
+    console.log(selectCashResult)
     const updateUserQuery = `UPDATE User SET cash = cash + '${selectCashResult[0].cash}' WHERE userIdx=${userIdx}`
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 

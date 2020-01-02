@@ -26,7 +26,7 @@ DB 오류 뜰 때
 */
 
 router.get('/', isLoggedin, async (req, res) => { 
-    const selectFaqQuery = `SELECT * FROM Faq`;
+    const selectFaqQuery = `SELECT * FROM faq`;
     const selectFaqResult = await db.queryParam_None(selectFaqQuery)
 
     if (!selectFaqResult)
@@ -38,7 +38,7 @@ router.get('/', isLoggedin, async (req, res) => {
 
 router.get('/:idx', isLoggedin ,async (req, res) => { 
     const faqIdx = req.params.idx
-    const selectFaqQuery = `SELECT * FROM Faq WHERE faqIdx=${faqIdx}`;
+    const selectFaqQuery = `SELECT * FROM faq WHERE faqIdx=${faqIdx}`;
     const selectFaqResult = await db.queryParam_None(selectFaqQuery)
 
     if (!selectFaqResult)
@@ -48,7 +48,7 @@ router.get('/:idx', isLoggedin ,async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
-    const insertFaqQuery = 'INSERT INTO Faq (title, content, createAt) VALUES (?,?,?)';
+    const insertFaqQuery = 'INSERT INTO faq (title, content, createAt) VALUES (?,?,?)';
     const insertFaqResult = await db.queryParam_Arr(insertFaqQuery, [req.body.title,req.body.content,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertFaqResult)

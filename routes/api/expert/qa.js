@@ -77,7 +77,7 @@ router.get("/consulted", isLoggedin , async function(req, res) { // 상담 신�
     
     let resData = [];
     resData = selectQaResult.map(element => {
-        return {...element, 'Cdate': moment(element.Cdate).format('YY.MM.DD AHH')}
+        return {...element, 'Cdate': (element.Cdate == '0000-00-00 00:00:00') ? 0 : moment(element.Cdate).format('YYYYMM')}
     })
 
     if (!selectQaResult)
@@ -133,10 +133,11 @@ router.put("/law" , async (req, res) => {
     
     const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
     const selectExpertQuery = `SELECT categoryCode, photo FROM Expert WHERE expertIdx=${expertIdx}`;
-    const selectUserQuery = `SELECT userIdx FROM expertConsult WHERE expertConsultIdx = ${expertConsultIdx}`
+    const selectUserQuery = `SELECT userIdx FROM ExpertConsult WHERE expertConsultIdx = ${expertConsultIdx}`
     const selectUserResult = await db.queryParam_None(selectUserQuery);
     const selectExpertResult = await db.queryParam_None(selectExpertQuery);
     
+    console.log(selectUserResult)
     const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [selectExpertResult[0].categoryCode, notifyMessage.ANSWERED, selectExpertResult[0].photo, selectUserResult[0].userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
 
 
