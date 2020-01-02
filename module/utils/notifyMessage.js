@@ -1,4 +1,4 @@
-module.export = {
+module.exports = {
     CONFIRMED : '신청한 광고가 배정되었습니다.\n 업로드 조건과 업로드 기한을 꼭 확인해주세요.\n (광고 세부내역을 확인해주세요)',
     NOT_CONFIRMED : '신청한 광고가 배정되지 않았습니다.\n 이번에는 아쉽지만 다른 광고에 도전해보아요.',
     DDAY_MINUS_ONE : 'D-1\n 광고 업로드가 하루 남았습니다.',

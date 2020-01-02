@@ -31,9 +31,9 @@ router.get('/daily/:idx', isLoggedin, async (req, res) => {
     const selectDailyResult = await db.queryParam_None(selectDailyQuery);
 
     if (!selectDailyResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "데일리 뉴스 조회 성공", selectDailyResult));    // 작품 삭제 성공 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_DAILYNEWS_SUCCESS, selectDailyResult));    // 작품 삭제 성공 
 });
 
 
@@ -48,9 +48,9 @@ router.get('/support/:idx', isLoggedin, async (req, res) => {
     });
 
     if (!selectTransaction)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_SUPPORTNEWS_SUCCESS, selectNewsResult));    // 작품 삭제 성공
 
 })
 
@@ -59,9 +59,9 @@ router.get('/daily', isLoggedin ,async (req, res) => {
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
     if (!selectNewsResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_DAILYNEWS_SUCCESS, selectNewsResult));    // 작품 삭제 성공
 })
 
 router.get('/support', isLoggedin ,async (req, res) => { 
@@ -69,9 +69,9 @@ router.get('/support', isLoggedin ,async (req, res) => {
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
     if (!selectNewsResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_SUPPORTNEWS_SUCCESS, selectNewsResult));    // 작품 삭제 성공
 })
 
 router.get('/recommand/:flag', isLoggedin, async (req, res) => { 
@@ -83,9 +83,9 @@ router.get('/recommand/:flag', isLoggedin, async (req, res) => {
     const selectNewsResult = await db.queryParam_None(selectNewsQuery);
 
     if (!insertNewsResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNewsResult));    // 작품 삭제 성공 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_SUPPORTNEWS_SUCCESS, selectNewsResult));    // 작품 삭제 성공 
 })
 
 router.post("/support", isLoggedin ,upload.single('poster'), async (req, res) => {
@@ -93,17 +93,17 @@ router.post("/support", isLoggedin ,upload.single('poster'), async (req, res) =>
     const insertNewsResult = await db.queryParam_Arr(insertNewsQuery, [req.file.location, req.body.category ,req.body.host, req.body.title, req.body.subtitle ,req.body.contents, req.body.calendarStart, req.body.calendarEnd ,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertNewsResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.INSERT_SUPPORTNEWS_SUCCESS));    // 작품 삭제 성공
 });
 
 router.post("/daily" , upload.single('thumbnail'), async (req, res) => {
     const insertDailyQuery = 'INSERT INTO DailyNews (thumbnail, title ,subtitle, content, createAt) VALUES (?,?,?,?,?)';
     const insertDailyResult = await db.queryParam_Arr(insertDailyQuery, [req.file.location, req.body.title ,req.body.subtitle, req.body.content, ,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
-    const selectDailyQuery = `SELECT dailyIdx FROM DailyNews WHERE thumbnail = '${req.file.location}'`;
-    const selectDailyResult = await db.queryParam_None(selectDailyQuery);
+    // const selectDailyQuery = `SELECT dailyIdx FROM DailyNews WHERE thumbnail = '${req.file.location}'`;
+    // const selectDailyResult = await db.queryParam_None(selectDailyQuery);
 
     // const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
     // const selectNotifyQuery = `SELECT thumbnail FROM DailyNews WHERE dailyIdx=${selectDailyResult[0].dailyIdx}`;
@@ -112,9 +112,9 @@ router.post("/daily" , upload.single('thumbnail'), async (req, res) => {
     // const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, ['0301', '데일리 뉴스가 업데이트 되었습니다', selectNotifyResult[0].thumbnail, req.decoded.idx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
 
     if (!insertDailyResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.INSERT_DAILYNEWS_SUCCESS));    // 작품 삭제 성공
 });
 
 router.post("/scrap", isLoggedin ,async (req, res) => {
@@ -123,9 +123,9 @@ router.post("/scrap", isLoggedin ,async (req, res) => {
     const insertNewsResult = await db.queryParam_Arr(insertNewsQuery, [userIdx ,req.body.newsIdx, 1])
 
     if (!insertNewsResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.INSERT_USERNEWS_SUCCESS));    // 작품 삭제 성공
 });
 
 module.exports = router;

@@ -8,6 +8,7 @@ const jwtUtils = require('../../../module/jwt');
 const moment = require('moment')
 const isLoggedin = require('../../../module/utils/authUtils').isLoggedin
 const authVideo = require('../../../module/youtube').authVideo;
+const notifyMessage =require('../../../module/utils/notifyMessage')
 /*
 마이 페이지 중에서 광고만 추출해서 라우트
 1. 광고 상태별 조회
@@ -68,9 +69,9 @@ router.get("/:progress", isLoggedin, async (req, res) => {
     selectUseradResult[selectUseradResult.length] = length;
 
     if (!selectUseradResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 조회 성공", selectUseradResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_SUCCESS, selectUseradResult));
     
 });
 
@@ -101,7 +102,7 @@ router.get("/:progress", isLoggedin, async (req, res) => {
 //         const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
 //     if (!selectUseradResult)
-//         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+//         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
 //     else
 //         res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 정렬별 조회 성공", selectUseradResult));    // 작품 삭제 성공
     
@@ -112,9 +113,9 @@ router.get("/:progress/:idx", async (req, res) => {
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     if (!selectUseradResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공", selectUseradResult));    // 작품 삭제 성공 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_ONE_SUCCESS, selectUseradResult));    // 작품 삭제 성공 
 });
 
 router.post("/confirm/", async (req, res) => {
@@ -127,13 +128,13 @@ router.post("/confirm/", async (req, res) => {
     console.log(selectAdResult)
     const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
     
-    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [`'${selectAdResult[0].categoryCode}'`, '신청한 광고에 배정 되었습니다', selectAdResult[0].thumbnail, userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
+    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [`'${selectAdResult[0].categoryCode}'`, notifyMessage.CONFIRMED, selectAdResult[0].thumbnail, userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
 
     
     if (!updateConfirmResult || !insertNotifyResult)
-        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "광고 배정 완료")); 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.UPDATE_USERAD_COMPLETE_SUCCESS)); 
     // INSERT NOTIFICATION 
 });
 
@@ -158,26 +159,26 @@ router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
     
     const selectVideoInfoResult = await db.queryParam_None(selectVideoInfoQuery);
 
-    const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, createAt) VALUES (?,?,?,?)`;
-    const selectAdQuery = `SELECT thumbnail, categoryCode FROM Ad WHERE adIdx=${adIdx}`;
-    const selectUseradResult = await db.queryParam_None(selectAdQuery);
-    console.log(selectUseradResult)
-    let dealWithData = {};
-    dealWithData = selectUseradResult[0];
-    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [dealWithData.categoryCode, '비디오가 인증 완료 되었습니다', dealWithData.thumbnail, moment().format('YYYY-MM-DD HH:mm:ss')]);
+    // const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, createAt) VALUES (?,?,?,?)`;
+    // const selectAdQuery = `SELECT thumbnail, categoryCode FROM Ad WHERE adIdx=${adIdx}`;
+    // const selectUseradResult = await db.queryParam_None(selectAdQuery);
+    // console.log(selectUseradResult)
+    // let dealWithData = {};
+    // dealWithData = selectUseradResult[0];
+    // const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [dealWithData.categoryCode, '비디오가 인증 완료 되었습니다', dealWithData.thumbnail, moment().format('YYYY-MM-DD HH:mm:ss')]);
     
-    console.log(selectVideoInfoResult);
+    // console.log(selectVideoInfoResult);
     if (!selectVideoInfoResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "셀렉트"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
 
     const updateUserAdResult = await db.queryParam_Arr(updateUserAdQuery,[moment().format('YYYY-MM-DD HH:mm:ss'), selectVideoInfoResult[0].videoInfoIdx, req.decoded.idx, adIdx])
 
     if(!insertVideoInfoResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "인서트"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else if (!updateUserAdResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "업데이트"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공")); 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.INSERT_VIDEOINFO_SUCCESS)); 
 })
 
 router.get('/ing', async (req, res) => {
@@ -186,9 +187,9 @@ router.get('/ing', async (req, res) => {
     const selectConfirmResult = await db.queryParam_None(selectConfirmQuery);
 
     if (!selectConfirmResult)
-        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "광고 검증 조회 완료")); 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_SUCCESS)); 
     // SELECT UserAd에서 progress=3인것만 리스트로 보여주면 됨
     // UserAd idx, Adidx, Useridx, 
 })
@@ -207,11 +208,11 @@ router.put('/ing', async (req, res) => {
 
     const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
     
-    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [selectCashResult[0].categoryCode, '광고의 리워드가 적립 되었습니다', selectCashResult[0].thumbnail, userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
+    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [selectCashResult[0].categoryCode, notifyMessage.REWARD, selectCashResult[0].thumbnail, userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
     if (!updateConfirmResult || !selectCashResult || !updateUserResult || !insertNotifyResult)
-        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "광고 진척 상황 수정 완료")); 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.UPDATE_USERAD_COMPLETE_SUCCESS)); 
     
     
     // UserAd의 progress=4로 바꿔줌
