@@ -151,7 +151,7 @@ router.get("/:progress/:idx", isLoggedin,async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_ONE_SUCCESS, resData));    // 작품 삭제 성공 
 });
 
-router.post("/confirm/", isLoggedin,async (req, res) => {
+router.post("/confirm" ,async (req, res) => {
     const {userIdx, adIdx} = req.body;
     const updateConfirmQuery = `UPDATE UserAd SET progress = 2, updateAt = '${moment().format('YYYY-MM-DD HH:mm:ss')}' WHERE userIdx = ${userIdx} AND adIdx = ${adIdx}`;
     const updateConfirmResult = await db.queryParam_None(updateConfirmQuery);
