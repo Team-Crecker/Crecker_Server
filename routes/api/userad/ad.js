@@ -56,7 +56,7 @@ router.get("/length", isLoggedin, async (req, res) => {
     const length = {'1' : selectUseradResult1.length, '2' : selectUseradResult2.length, '3' : selectUseradResult3.length, '4' : selectUseradResult4.length}
     //get 한번에 4개
 
-    if (!selectUseradResult)
+    if (!selectUseradResult1 || !selectUseradResult2 || !selectUseradResult3 || !selectUseradResult4 )
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_SUCCESS, length));
@@ -71,9 +71,9 @@ router.get("/:progress", isLoggedin, async (req, res) => {
     else if (req.params.progress == 2) 
         selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash, b.uploadTo FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=2 AND a.userIdx=${userIdx} ORDER BY b.uploadFrom DESC`;
     else if (req.params.progress == 3)
-        selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=3 ORDER BY b.uploadFrom DESC';
+        selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=3 AND a.userIdx=${userIdx} ORDER BY b.uploadFrom DESC`;
     else if (req.params.progress == 4)
-        selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=4 ORDER BY b.uploadFrom DESC';
+        selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=4 AND a.userIdx=${userIdx}ORDER BY b.uploadFrom DESC`;
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     console.log(selectUseradResult)
@@ -85,7 +85,7 @@ router.get("/:progress", isLoggedin, async (req, res) => {
             else
                 element.isWarn = 0;
         }
-    }
+    } 
 
     if (!selectUseradResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
@@ -126,6 +126,16 @@ router.get("/:progress", isLoggedin, async (req, res) => {
 //         res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 정렬별 조회 성공", selectUseradResult));    // 작품 삭제 성공
     
 // });
+const convert = element => {
+    return {...element,
+    applyFrom: moment(element.applyFrom).format('YY.MM.DD'),
+    applyTo: moment(element.applyTo).format('YY.MM.DD'),
+    choice: moment(element.choice).format('YY.MM.DD'),
+    completeDate: moment(element.completeDate).format('YY.MM.DD'),
+    uploadFrom: moment(element.uploadFrom).format('YY.MM.DD'),
+    uploadTo: moment(element.uploadTo).format('YY.MM.DD'),
+    }
+};
 
 router.get("/:progress/:idx", isLoggedin,async (req, res) => {
     const {progress} = req.params;
@@ -133,10 +143,12 @@ router.get("/:progress/:idx", isLoggedin,async (req, res) => {
     const selectUseradQuery = `SELECT * FROM UserAd as a JOIN Ad as b ON a.adIdx = b.adIdx WHERE a.progress=${progress} AND b.adIdx = ${req.params.idx} AND a.userIdx=${userIdx}` //개별 인덱스 똑바로 가져오게 수정 요망
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
+    let resData = selectUseradResult.map(convert);
+
     if (!selectUseradResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_ONE_SUCCESS, selectUseradResult));    // 작품 삭제 성공 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_ONE_SUCCESS, resData));    // 작품 삭제 성공 
 });
 
 router.post("/confirm/", isLoggedin,async (req, res) => {
@@ -167,6 +179,17 @@ router.post("/notConfirm/", async (req, res) => {
     // INSERT NOTIFICATION 
     // 광고가 배정되지 않았습니다.
 });
+
+router.get("/auth/auth/auth", isLoggedin, authVideo, async (req, res) => {
+    const resData = {};
+    resData.thumbnails = req.youtubeData.thumbnails;
+    resData.publishedAt = moment(req.youtubeData.publishedAt).format('YY/ MM/ DD');
+    if (!resData)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_ONE_SUCCESS, resData));    // 작품 삭제 성공 
+});
+
 //썸네일 전달 해주는 GET 파기, 날짜 형식 : 2019/ 12/ 25
 router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
     const {thumbnails, publishedAt, viewCount, likeCount} = req.youtubeData;
