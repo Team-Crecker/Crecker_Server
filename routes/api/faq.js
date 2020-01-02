@@ -37,11 +37,11 @@ router.get('/', isLoggedin, async (req, res) => {
 })
 
 router.get('/:idx', isLoggedin ,async (req, res) => { 
-    const faqIdx = req.body.idx
+    const faqIdx = req.params.idx
     const selectFaqQuery = `SELECT * FROM Faq WHERE faqIdx=${faqIdx}`;
     const selectFaqResult = await db.queryParam_None(selectFaqQuery)
 
-    if (!selectNewsResult)
+    if (!selectFaqResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_FAQ_SUCCESS, selectFaqResult));    // 작품 삭제 성공

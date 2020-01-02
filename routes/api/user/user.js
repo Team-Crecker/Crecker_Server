@@ -11,7 +11,7 @@ const upload = require('../../../config/multer');
 
 router.get('/', authUtil.isLoggedin ,async (req, res) => { //프로필 사진, 이름, 채널명, 주소, 연락처 : params로 유저 인덱스 받기? no?
     const idx = req.decoded.idx
-    const selectUserQuery = `SELECT * FROM User WHERE userIdx = ${idx}`;
+    const selectUserQuery = `SELECT profileImage, phone, location FROM User WHERE userIdx = ${idx}`;
     const selectUserResult = await db.queryParam_None(selectUserQuery);
 
     if (!selectUserResult)
@@ -22,7 +22,7 @@ router.get('/', authUtil.isLoggedin ,async (req, res) => { //프로필 사진, �
 
 router.get('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 조회
     const idx = req.decoded.idx
-    const selectUserQuery = `SELECT * FROM User WHERE userIdx = ${idx}`;
+    const selectUserQuery = `SELECT typeAd, typeExpert, typeNews FROM User WHERE userIdx = ${idx}`;
     const selectUserResult = await db.queryParam_None(selectUserQuery);
 
     if (!selectUserResult)

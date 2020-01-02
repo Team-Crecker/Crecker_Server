@@ -40,8 +40,7 @@ const alerm = element => {
         return false;
 }
 
-
-router.get("/:progress", isLoggedin, async (req, res) => {
+router.get("/:progress/length", isLoggedin, async (req, res) => {
     const userIdx = req.decoded.idx;
     let selectUseradQuery;
     if (req.params.progress == 1)
@@ -66,7 +65,26 @@ router.get("/:progress", isLoggedin, async (req, res) => {
                 element.isWarn = 0;
         }
     }
-    selectUseradResult[selectUseradResult.length] = length;
+
+    if (!selectUseradResult)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_SUCCESS, length));
+    
+});
+
+router.get("/:progress", isLoggedin, async (req, res) => {
+    const userIdx = req.decoded.idx;
+    let selectUseradQuery;
+    if (req.params.progress == 1)
+        selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=1 AND a.userIdx=${userIdx} ORDER BY b.uploadFrom DESC`;
+    else if (req.params.progress == 2) 
+        selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash, b.uploadTo FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=2 AND a.userIdx=${userIdx} ORDER BY b.uploadFrom DESC`;
+    else if (req.params.progress == 3)
+        selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=3 ORDER BY b.uploadFrom DESC';
+    else if (req.params.progress == 4)
+        selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=4 ORDER BY b.uploadFrom DESC';
+    const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     if (!selectUseradResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
@@ -181,20 +199,21 @@ router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.INSERT_VIDEOINFO_SUCCESS)); 
 })
 
-router.get('/ing', async (req, res) => {
+router.get('/ing/ing/ing', async (req, res) => {
     const {userIdx, adIdx} = req.body;
-    const selectConfirmQuery = `SELECT UserAd SET progress = 3 WHERE userIdx = ${userIdx} adIdx = ${adIdx}`;
+    console.log(req.params)
+    const selectConfirmQuery = `SELECT * FROM UserAd WHERE userIdx = ${userIdx} AND adIdx = ${adIdx} AND progress = '3'`;
     const selectConfirmResult = await db.queryParam_None(selectConfirmQuery);
 
     if (!selectConfirmResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_SUCCESS)); 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_SUCCESS, selectConfirmResult)); 
     // SELECT UserAd에서 progress=3인것만 리스트로 보여주면 됨
     // UserAd idx, Adidx, Useridx, 
 })
 
-router.put('/ing', async (req, res) => {
+router.put('/ing/', async (req, res) => {
     // Update UserAd에서 progress=3인것을 4로 바꾸는 로직
     const {userIdx, adIdx} = req.body;
     const updateConfirmQuery = `UPDATE UserAd SET progress = 4, updateAt = ${moment().format('YYYY-MM-DD')} WHERE userIdx = ${userIdx} AND adIdx = ${adIdx} AND progress = 3`;

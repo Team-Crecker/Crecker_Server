@@ -22,7 +22,7 @@ router.get('/profile', isLoggedin , async (req, res) => {
 
 router.post('/profile' , isLoggedin ,upload.single('photo'), async (req, res) => {
     const insertExpertQuery = 'INSERT INTO Expert (categoryCode, name, experience, description, photo, createAt) VALUES (?, ?, ?, ?, ?, ?)';
-    const insertExpertResult = await db.queryParam_Arr(insertExpertQuery,[req.body.categoryCode, req.body.name, req.body.experience, req.body.description, req.file.location, moment().format("YYYY-MM-DD HH:mm:dd")])
+    const insertExpertResult = await db.queryParam_Arr(insertExpertQuery,[req.body.categoryCode, req.body.name, 0, req.body.description, req.file.location, moment().format("YYYY-MM-DD HH:mm:dd")])
     
     if (!insertExpertResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
