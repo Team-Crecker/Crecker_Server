@@ -113,10 +113,10 @@ router.get("/law/:idx", isLoggedin ,async function(req, res) {
 
 router.post("/law", isLoggedin , async function(req, res) {
     // 질문하기
-    const {Qtitle, Qcontent, categoryCode, isSecret} = req.body;
-    const user = req.decoded.idx;
+    const {Qtitle, Qcontent, isSecret} = req.body;
+    const userIdx = req.decoded.idx;
     const insertQaQuery = 'INSERT INTO ExpertConsult (userIdx ,Qtitle,Qcontent,categoryCode,isSecret,createAt) VALUES (?, ?,?,?,?,?)'; //category 1 == Law
-    const insertQaResult = await db.queryParam_Arr(insertQaQuery, [user, Qtitle , Qcontent, categoryCode , isSecret,moment().format('YYYY-MM-DD HH:mm:ss') ])
+    const insertQaResult = await db.queryParam_Arr(insertQaQuery, [userIdx, Qtitle , Qcontent, '0201' , isSecret,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertQaResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
