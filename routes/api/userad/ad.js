@@ -40,31 +40,21 @@ const alerm = element => {
         return false;
 }
 
-router.get("/:progress/length", isLoggedin, async (req, res) => {
+router.get("/length", isLoggedin, async (req, res) => {
     const userIdx = req.decoded.idx;
-    let selectUseradQuery;
-    if (req.params.progress == 1)
-        selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=1 AND a.userIdx=${userIdx} ORDER BY b.uploadFrom DESC`;
-    else if (req.params.progress == 2) 
-        selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash, b.uploadTo FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=2 AND a.userIdx=${userIdx} ORDER BY b.uploadFrom DESC`;
-    else if (req.params.progress == 3)
-        selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=3 ORDER BY b.uploadFrom DESC';
-    else if (req.params.progress == 4)
-        selectUseradQuery = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=4 ORDER BY b.uploadFrom DESC';
-    const selectUseradResult = await db.queryParam_None(selectUseradQuery)
-    const length = {'length' : selectUseradResult.length}
+
+    const selectUseradQuery1 = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=1 AND a.userIdx=${userIdx}`;
+    const selectUseradQuery2 = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash, b.uploadTo FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=2 AND a.userIdx=${userIdx}`;
+    const selectUseradQuery3 = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=3';
+    const selectUseradQuery4 = 'SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=4';
+
+    const selectUseradResult1 = await db.queryParam_None(selectUseradQuery1);
+    const selectUseradResult2 = await db.queryParam_None(selectUseradQuery2);
+    const selectUseradResult3 = await db.queryParam_None(selectUseradQuery3);
+    const selectUseradResult4 = await db.queryParam_None(selectUseradQuery4);
+
+    const length = {'1' : selectUseradResult1.length, '2' : selectUseradResult2.length, '3' : selectUseradResult3.length, '4' : selectUseradResult4.length}
     //get 한번에 4개
-    
-    console.log(selectUseradResult)
-    if (req.params.progress == 2) {
-        for (var element of selectUseradResult) {
-            const isWarn = alerm(element);
-            if (isWarn)
-                element.isWarn = 1;
-            else
-                element.isWarn = 0;
-        }
-    }
 
     if (!selectUseradResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
@@ -137,8 +127,10 @@ router.get("/:progress", isLoggedin, async (req, res) => {
     
 // });
 
-router.get("/:progress/:idx", async (req, res) => {
-    const selectUseradQuery = `SELECT * FROM Ad WHERE adIdx = ${req.params.idx}` //개별 인덱스 똑바로 가져오게 수정 요망
+router.get("/:progress/:idx", isLoggedin,async (req, res) => {
+    const {progress} = req.params;
+    const userIdx = req.decoded.idx;
+    const selectUseradQuery = `SELECT * FROM UserAd as a JOIN Ad as b ON a.adIdx = b.adIdx WHERE a.progress=${progress} AND b.adIdx = ${req.params.idx} AND a.userIdx=${userIdx}` //개별 인덱스 똑바로 가져오게 수정 요망
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     if (!selectUseradResult)
@@ -147,7 +139,7 @@ router.get("/:progress/:idx", async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_AD_ONE_SUCCESS, selectUseradResult));    // 작품 삭제 성공 
 });
 
-router.post("/confirm/", async (req, res) => {
+router.post("/confirm/", isLoggedin,async (req, res) => {
     const {userIdx, adIdx} = req.body;
     const updateConfirmQuery = `UPDATE UserAd SET progress = 2, updateAt = '${moment().format('YYYY-MM-DD HH:mm:ss')}' WHERE userIdx = ${userIdx} AND adIdx = ${adIdx}`;
     const updateConfirmResult = await db.queryParam_None(updateConfirmQuery);
