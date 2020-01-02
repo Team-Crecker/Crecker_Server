@@ -41,7 +41,7 @@ router.get('/:idx', isLoggedin ,async (req, res) => {
     const selectNoticeQuery = `SELECT * FROM Notice WHERE noticeIdx=${noticeIdx}`;
     const selectNoticeResult = await db.queryParam_None(selectNoticeQuery)
 
-    if (!selectNewsResult)
+    if (!selectNoticeResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_NOTICE_SUCCESS, selectNoticeResult));    // 작품 삭제 성공
