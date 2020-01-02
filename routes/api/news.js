@@ -16,6 +16,24 @@ DB 오류 뜰 때
     1. GET, POST 확인하기
     2. 라우팅 제대로 되었는지 확인하기
 */
+const changeLang = element => {
+    const time = moment(element.createAt).diff(moment(), 'days');
+    return {...element, createAt: (time <= 1 && time >= 0) ? moment(element.createAt).fromNow() : moment(element.createAt).format('YY.MM.DD')} 
+}
+
+router.get('/card', isLoggedin ,async (req, res) => { 
+    const selectNewsQuery = 'SELECT dailyIdx,thumbnail,createAt FROM DailyNews ORDER BY createAt DESC LIMIT 5';
+    const selectNewsResult = await db.queryParam_None(selectNewsQuery)
+    moment.locale('ko')
+    
+    let resData = selectNewsResult.map(changeLang);
+
+
+    if (!selectNewsResult)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_DAILYNEWS_SUCCESS, resData));    // 작품 삭제 성공
+})
 
 router.get('/daily/:idx', isLoggedin, async (req, res) => { 
     const idx = req.params.idx;
@@ -50,6 +68,8 @@ router.get('/support/:idx', isLoggedin, async (req, res) => {
 router.get('/daily', isLoggedin ,async (req, res) => { 
     const selectNewsQuery = 'SELECT * FROM DailyNews ORDER BY createAt DESC';
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
+    
+    let resData = selectNewsResult.map(changeLang);
 
     if (!selectNewsResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
@@ -93,7 +113,7 @@ router.post("/support", upload.single('poster'), async (req, res) => {
 
 router.post("/daily" , upload.single('thumbnail'), async (req, res) => {
     const insertDailyQuery = 'INSERT INTO DailyNews (thumbnail, title ,subtitle, content, createAt) VALUES (?,?,?,?,?)';
-    const insertDailyResult = await db.queryParam_Arr(insertDailyQuery, [req.file.location, req.body.title ,req.body.subtitle, req.body.content, ,moment().format('YYYY-MM-DD HH:mm:ss') ])
+    const insertDailyResult = await db.queryParam_Arr(insertDailyQuery, [req.file.location, req.body.title ,req.body.subtitle, req.body.content, moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertDailyResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공

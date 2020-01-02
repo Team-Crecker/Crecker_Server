@@ -46,7 +46,6 @@ router.get("/law", isLoggedin ,async function(req, res) {//질문
 router.get("/posted", isLoggedin , async function(req, res) { //내 질문
     const userIdx = req.decoded.idx;    
     const selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE userIdx = ${userIdx} AND isComplete IS NULL ORDER BY views DESC`;
-
     const selectQaResult = await db.queryParam_None(selectQaQuery)
 
     if (!selectQaResult)
@@ -90,17 +89,23 @@ router.get("/consulted", isLoggedin , async function(req, res) { // 상담 신�
 router.get("/law/:idx", isLoggedin ,async function(req, res) {
     //질문 답변 개별 조회
     const {idx}  = req.params; 
-
-    const selectQaQuery = `SELECT b.expertConsultIdx, a.expertIdx, a.name, a.description, a.photo, b.categoryCode, b.Qtitle, b.Qcontent, b.Acontent ,b.isComplete, b.isSecret, b.views ,b.createAt, b.answerUpdateAt FROM Expert AS a JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.expertConsultIdx = ${idx};`
+    const myIdx = req.decoded.idx;
+    const selectQaQuery = `SELECT b.expertConsultIdx, b.userIdx ,a.expertIdx, a.name, a.description, a.photo, b.categoryCode, b.Qtitle, b.Qcontent, b.Acontent ,b.isComplete, b.isSecret, b.views ,b.createAt, b.answerUpdateAt FROM Expert AS a JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.expertConsultIdx = ${idx};`
     const updateQaQuery = `UPDATE ExpertConsult SET views = views +1 WHERE expertConsultIdx = ${idx}`;
     
     let selectQaResult;
     let resData = [];
+    let userIdxAd;
     const selectTransaction = await db.Transaction(async connection => {
         const updateQaResult = await connection.query(updateQaQuery);
         selectQaResult = await connection.query(selectQaQuery);
+        userIdxAd = selectQaResult[0].userIdx;
+        const isOkConsult = (myIdx === userIdxAd) ? true : false;
+        const selectQuery = `SELECT email FROM User WHERE userIdx=${userIdxAd}`
+        const selectResult = await connection.query(selectQuery);
+        
         resData = selectQaResult.map(element => {
-            return {...element, 'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
+            return {...element, isOkConsult: isOkConsult ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
         })
         
     });
