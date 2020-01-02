@@ -199,14 +199,14 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
     const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
     console.log(title)
     console.log(thumbnail)
-    const insertAdQuery =`INSERT INTO Ad thumbnail, title, subtitle, cash, applyFrom, applyTo,
+    const insertAdQuery =`INSERT INTO Ad (thumbnail, title, subtitle, cash, applyFrom, applyTo,
     choice, uploadFrom, uploadTo, completeDate, summaryPhoto, fullPhoto, preference,
-    campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, createAt, subscribers, subscribersNum 
+    campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, createAt, subscribers, subscribersNum)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const insertAdResult = await db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
         applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate,
     summaryPhoto, fullPhoto, preference, campaignInfo, url, 
-    reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YY.MM.DD'),subscribers,subscribersNum]);
+    reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YYYY-MM-DD'),subscribers,subscribersNum]);
 
     console.log(insertAdResult);
 
