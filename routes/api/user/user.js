@@ -15,9 +15,9 @@ router.get('/', authUtil.isLoggedin ,async (req, res) => { //프로필 사진, �
     const selectUserResult = await db.queryParam_None(selectUserQuery);
 
     if (!selectUserResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.OK, '유저 개인정보 조회 실패')) 
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)) 
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, '유저 개인정보 조회 성공',  selectUserResult))
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_SUCCESS,  selectUserResult))
 })
 
 router.get('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 조회
@@ -26,9 +26,9 @@ router.get('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 �
     const selectUserResult = await db.queryParam_None(selectUserQuery);
 
     if (!selectUserResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.OK, '유저 개인정보 조회 실패')) 
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)) 
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, '유저 개인정보 조회 성공',  selectUserResult))
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_INTEREST_SUCCESS,  selectUserResult))
 })
 router.put('/', authUtil.isLoggedin ,async (req, res) => {
     const {phone, location} = req.body;
@@ -37,9 +37,9 @@ router.put('/', authUtil.isLoggedin ,async (req, res) => {
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 
     if (!updateUserResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.OK, '유저 개인정보 조회 실패')) 
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)) 
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, '유저 개인정보 조회 성공'))
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.UPDATE_USER_SUCCESS))
 })
 router.put('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 디비 수정 요망
     const {typeAd, typeExpert, typeNews} = req.body;
@@ -48,9 +48,9 @@ router.put('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 �
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 
     if (!updateUserResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.OK, '유저 개인정보 조회 실패')) 
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)) 
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, '유저 개인정보 조회 성공'))
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.UPDATE_USER_INTEREST_SUCCESS))
 })
 
 router.put('/profileImage', authUtil.isLoggedin, upload.single('profileImage') ,async (req, res) => { //관심사 디비 수정 요망
@@ -60,8 +60,8 @@ router.put('/profileImage', authUtil.isLoggedin, upload.single('profileImage') ,
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 
     if (!updateUserResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.OK, '유저 개인정보 조회 실패')) 
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)) 
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, '유저 개인정보 조회 성공'))
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.UPDATE_USER_IMAGE_SUCCESS))
 })
 module.exports = router;
