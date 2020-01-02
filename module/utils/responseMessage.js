@@ -27,8 +27,12 @@ module.exports = {
   INSERT_EXPERT_PROFILE_SUCCESS: "전문가 프로필 입력 성공",
   INSERT_EXPERT_PROFILE_FAILED: "전문가 프로필 입력 실패",
 
-  SELECT_EXPERT_CONSULT_SUCCESS: "상담프로세스 조회 성공",
-  SELECT_EXPERT_CONSULT_FAILED: "상담프로세스 조회 실패", 
+  SELECT_EXPERT_QUESTION_SUCCESS: "질문 조회 성공",
+  SELECT_EXPERT_QUESTION_FAILED: "질문 조회 실패",
+  SELECT_EXPERT_ANSWER_SUCCESS: "답변 조회 성공",
+  SELECT_EXPERT_ANSWER_FAILED: "답변 조회 실패", 
+  SELECT_EXPERT_CONSULT_SUCCESS: "상담 조회 성공",
+  SELECT_EXPERT_CONSULT_FAILED: "상담 조회 실패",  
   INSERT_EXPERT_QUESTION_SUCCESS: "질문 등록 성공",
   INSERT_EXPERT_QUESTION_FAILED: "질문 등록 실패", 
   INSERT_EXPERT_ANSWER_SUCCESS: "답변 등록 성공",
@@ -40,5 +44,63 @@ module.exports = {
   SELECT_USER_AD_FAILED: "유저 광고 조회 실패",
   SELECT_USER_AD_ONE_SUCCESS: "유저 광고 개별 조회 성공",
   SELECT_USER_AD_ONE_FAILED: "유저 광고 개별 조회 실패",
+
+  DB_ERROR: "DB 오류",
+  PERSONAL_REPORT_SUCCESS: "개별 리포트 조회 성공",
+  CASH_HISOTRY_SCUEESS: "이용내역 조회 성공",
+  CASH_WITHDRAW_SCUEESS: "인출하기 성공",
+
+  SELECT_NOTIFICATION_SUCCESS: '알림 조회 성공',
+  SELECT_NOTIFICATION_FAILED: '알림 조회 실패',
+  INSERT_NOTIFICATION_SUCCESS: '알림 등록 성공',
+  INSERT_NOTIFICATION_FAILED: '알림 등록 실패',
+
+  UPDATE_USERAD_CONFIRM_SUCCESS: '광고 배정 성공',
+  UPDATE_USERAD_CONFIRM_FAILED: '광고 배정 실패',
+  INSERT_VIDEOINFO_SUCCESS: '광고 동영상 인증 성공',
+  INSERT_VIDEOINFO_FAILED: '광고 동영상 인증 실패',
+  INSERT_CHANNELINFO_SUCCESS: '채널 인증 성공',
+  INSERT_CHANNELINFO_FAILED: '채널 인증 실패',
+  UPDATE_USERAD_COMPLETE_SUCCESS: '광고 진척사항 완료 성공',
+  UPDATE_USERAD_COMPLETE_FAILED: '광고 진척사항 완료 실패',
+  
+  SELECT_DAILYNEWS_SUCCESS: '데일리 뉴스 조회 성공',
+  SELECT_DAILYNEWS_FAILED: '데일리 뉴스 조회 실패',
+  INSERT_DAILYNEWS_SUCCESS: '데일리 뉴스 등록 성공',
+  INSERT_DAILYNEWS_FAILED: '데일리 뉴스 등록 실패',
+  
+  SELECT_USERNEWS_SUCCESS: '스크랩 뉴스 조회 성공',
+  SELECT_USERNEWS_FAILED: '스크랩 뉴스 조회 실패',
+  INSERT_USERNEWS_SUCCESS: '스크랩 뉴스 등록 성공',
+  INSERT_USERNEWS_FAILED: '스크랩 뉴스 등록 실패',
+
+  SELECT_FAQ_SUCCESS: 'FAQ 조회 성공',
+  SELECT_FAQ_FAILED: 'FAQ 조회 실패',
+  INSERT_FAQ_SUCCESS: 'FAQ 등록 성공',
+  INSERT_FAQ_FAILED: 'FAQ 등록 실패',
+
+  SELECT_NOTICE_SUCCESS: '공지사항 조회 성공',
+  SELECT_NOTICE_FAILED: '공지사항 조회 실패',
+  INSERT_NOTICE_SUCCESS: '공지사항 등록 성공',
+  INSERT_NOTICE_FAILED: '공지사항 등록 실패',
+
+  SELECT_SUPPORTNEWS_SUCCESS: '서포트 뉴스 조회 성공',
+  SELECT_SUPPORTNEWS_FAILED: '서포트 뉴스 조회 실패',
+  INSERT_SUPPORTNEWS_SUCCESS: '서포트 뉴스 등록 성공',
+  INSERT_SUPPORTNEWS_FAILED: '서포트 뉴스 등록 실패',
+  
+  SELECT_USER_SUCCESS: '유저 개별 조회 성공',
+  SELECT_USER_FAILED: '유저 개별 조회 실패',
+  SELECT_USER_INTEREST_SUCCESS: '유저 관심사 조회 성공',
+  SELECT_USER_INTEREST_FAILED: '유저 관심사 조회 실패',
+  UPDATE_USER_SUCCESS: '유저 정보 변경 성공',
+  UPDATE_USER_FAILED: '유저 정보 변경 실패',
+  UPDATE_USER_INTEREST_SUCCESS: '유저 관심사 변경 성공',
+  UPDATE_USER_INTEREST_FAILED: "유저 관심사 변경 실패",
+  UPDATE_USER_IMAGE_SUCCESS:'유저 이미지 변경 성공',
+  UPDATE_USER_IMAGE_FAILED: '유저 이미지 변경 실패'
+
+
+
 }
  

@@ -29,22 +29,22 @@ router.get('/', isLoggedin, async (req, res) => {
     const selectNoticeResult = await db.queryParam_None(selectNoticeQuery)
 
     if (!selectNoticeResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectNoticeResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_NOTICE_SUCCESS, selectNoticeResult));    // 작품 삭제 성공
 
 })
 
 
 router.get('/:idx', isLoggedin ,async (req, res) => { 
-    const noticeIdx = req.body.idx
+    const noticeIdx = req.params.idx
     const selectNoticeQuery = `SELECT * FROM Notice WHERE noticeIdx=${noticeIdx}`;
     const selectNoticeResult = await db.queryParam_None(selectNoticeQuery)
 
-    if (!selectNewsResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+    if (!selectNoticeResult)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "FAQ 개별 조회 성공", selectNoticeResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_NOTICE_SUCCESS, selectNoticeResult));    // 작품 삭제 성공
 })
 
 router.post("/", async (req, res) => {
@@ -52,9 +52,9 @@ router.post("/", async (req, res) => {
     const insertNoticeResult = await db.queryParam_Arr(insertNoticeQuery, [req.body.title,req.body.content,moment().format('YYYY-MM-DD HH:mm:ss') ])
 
     if (!insertNoticeResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.INSERT_NOTICE_SUCCESS));    // 작품 삭제 성공
 });
 
 module.exports = router;

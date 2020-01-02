@@ -15,19 +15,19 @@ router.get('/profile', isLoggedin , async (req, res) => {
     const selectExpertResult = await db.queryParam_None(selectExpertQuery)
 
     if (!selectExpertResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 실패
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "전문가 프로필 전체 조회 성공", selectExpertResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_PROFILE_SUCCESS, selectExpertResult));    // 작품 삭제 성공
 })
 
 router.post('/profile' , isLoggedin ,upload.single('photo'), async (req, res) => {
     const insertExpertQuery = 'INSERT INTO Expert (categoryCode, name, experience, description, photo, createAt) VALUES (?, ?, ?, ?, ?, ?)';
-    const insertExpertResult = await db.queryParam_Arr(insertExpertQuery,[req.body.categoryCode, req.body.name, req.body.experience, req.body.description, req.file.location, moment().format("YYYY-MM-DD HH:mm:dd")])
+    const insertExpertResult = await db.queryParam_Arr(insertExpertQuery,[req.body.categoryCode, req.body.name, 0, req.body.description, req.file.location, moment().format("YYYY-MM-DD HH:mm:dd")])
     
     if (!insertExpertResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else   
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "전문가 프로필 입력 성공"));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.INSERT_EXPERT_PROFILE_SUCCESS));    // 작품 삭제 성공
 })
 
 

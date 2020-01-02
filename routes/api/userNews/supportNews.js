@@ -29,38 +29,16 @@ const authVideo = require('../../../module/youtube').authVideo
  -> /userad/2(배정)/:useradIdx/auth
  -> POST
 */
-const alerm = element => {
-    moment.locale('ko');
-    const nowDate = moment();
-    const warn = moment.duration(moment(element.uploadTo).diff(nowDate)).asDays();
-    if(warn <= 1)    
-        return true;
-    else    
-        return false;
-}
 
 router.get("/", isLoggedin, async (req, res) => {
     const userIdx = req.decoded.idx;
-    const selectUseradQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE a.userIdx=${userIdx} AND a.isScrapped = 1 ORDER BY b.calendarEnd DESC`
-    const selectUseradResult = await db.queryParam_None(selectUseradQuery)
-    const length = {length :selectUseradResult.length}
-    
-    console.log(selectUseradResult)
-    if (req.params.progress == 2) {
-        for (var element of selectUseradResult) {
-            const isWarn = alerm(element);
-            if (isWarn)
-                element.isWarn = 1;
-            else
-                element.isWarn = 0;
-        }
-    }
-    selectUseradResult[selectUseradResult.length] = length;
+    const selectUserNewsQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE a.userIdx=${userIdx} AND a.isScrapped = 1 ORDER BY b.calendarEnd DESC`
+    const selectUserNewsResult = await db.queryParam_None(selectUserNewsQuery)
 
-    if (!selectUseradResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));
+    if (!selectUserNewsResult)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 조회 성공", selectUseradResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, selectUserNewsResult));
     
 });
 
@@ -69,35 +47,9 @@ router.get("/:idx", isLoggedin ,async (req, res) => {
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
     if (!selectUseradResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공", selectUseradResult));    // 작품 삭제 성공 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, selectUseradResult));    // 작품 삭제 성공 
 });
-
-router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
-    const {thumbnails, publishedAt, viewCount, likeCount} = req.youtubeData;
-    const {adIdx ,url, review} = req.body;
-
-    const insertVideoInfoQuery = `INSERT INTO VideoInfo (thumbnail, url, uploadDate, review, likes, views1) VALUES (?,?,?,?,?,?)`;
-    const insertVideoInfoResult = await db.queryParam_Arr(insertVideoInfoQuery, [thumbnails, url, publishedAt, review, likeCount, viewCount]);
-
-    const selectVideoInfoQuery = `SELECT videoInfoIdx FROM VideoInfo WHERE url = '${url}'`;
-    const updateUserAdQuery = `UPDATE UserAd SET progress = 3, updateAt = ?, videoInfoIdx = ? WHERE userIdx=? AND adIdx=?`;
-    
-    const selectVideoInfoResult = await db.queryParam_None(selectVideoInfoQuery);
-
-    console.log(selectVideoInfoResult);
-    if (!selectVideoInfoResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "셀렉트"));    // 작품 삭제 성공
-
-    const updateUserAdResult = await db.queryParam_Arr(updateUserAdQuery,[moment().format('YYYY-MM-DD HH:mm:ss'), selectVideoInfoResult[0].videoInfoIdx, req.decoded.idx, adIdx])
-
-    if(!insertVideoInfoResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "인서트"));    // 작품 삭제 성공
-    else if (!updateUserAdResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "업데이트"));    // 작품 삭제 성공
-    else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공")); 
-})
 
 module.exports = router;

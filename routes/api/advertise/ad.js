@@ -89,7 +89,7 @@ res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤
 
 
 //광고 맞춤형 
-router.get('/interest',authUtils.isLoggedin, async(req,res) => {
+router.get('/interest', authUtils.isLoggedin, async(req,res) => {
     
     console.log(req.decoded.typeAd);
     const getInterestQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad WHERE categoryCode = ?'
@@ -194,27 +194,27 @@ const convert = element => {
 
 //광고 삽입
 router.post('/insert',upload.array('imgs'),async(req,res)=>{          
-                           
-    
     const {title, subtitle, cash, applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate
     , preference, campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, subscribers, subscribersNum }  = req.body;
     const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
-
-    const insertAdQuery ="INSERT INTO Ad "
-    + "(thumbnail,title,subtitle,cash,applyFrom,applyTo,choice,uploadFrom,uploadTo,completeDate,"
-    + "summaryPhoto,fullPhoto,preference,campaignInfo,url,reward,keyword,campaignMission,addInfo,categoryCode,createAt,subscribers,subscribersNum) "
-    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    const insertAdResult = await  db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
+    console.log(title)
+    console.log(thumbnail)
+    const insertAdQuery =`INSERT INTO Ad thumbnail, title, subtitle, cash, applyFrom, applyTo,
+    choice, uploadFrom, uploadTo, completeDate, summaryPhoto, fullPhoto, preference,
+    campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, createAt, subscribers, subscribersNum 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const insertAdResult = await db.queryParam_Parse(insertAdQuery,[thumbnail, title, subtitle, cash, 
         applyFrom, applyTo, choice, uploadFrom, uploadTo, completeDate,
     summaryPhoto, fullPhoto, preference, campaignInfo, url, 
     reward, keyword, campaignMission, addInfo, categoryCode,moment().format('YY.MM.DD'),subscribers,subscribersNum]);
-    
+
+    console.log(insertAdResult);
+
     if (!insertAdResult){
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-    res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
     }
-
 });
 
 
@@ -262,15 +262,18 @@ router.post('/write', authUtils.isLoggedin ,async(req,res) => {
     
     const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl,isAgree, userIdx) VALUES(?,?,?,?,?,?,?,?,?,?)'
     const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, progress, createAt) VALUES (?,?,?,?)';
-    
+    const getPlanQuery = `SELECT planIdx FROM Plan WHERE phone=${req.body.phone}`;
     const writeTransaction = db.Transaction(async connection => {
         const getWriteResult = await connection.query(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl,req.body.isAgree, req.decoded.idx]);
         const postWriteResult = await connection.query(postWriteQuery,[req.decoded.idx, req.body.adIdx, 1, moment().format('YYYY-MM-DD HH:mm:ss')]);
     })
+    const getPlanResult = await db.queryParam_None(getPlanQuery);
+    const putUserAdQuery = `UPDATE UserAd SET planIdx = ${getPlanResult[0].planIdx} WHERE adIdx=${req.body.adIdx} AND userIdx=${req.decoded.idx}`;
     
-    
-    if (!writeTransaction){
-        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    const putUserAdResult = await db.queryParam_None(putUserAdQuery);
+
+    if (!writeTransaction || !putUserAdResult){
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
     res.status(200).send(defaultRes.successTrue(statusCode.OK,"기획서 작성 성공"));
     }
