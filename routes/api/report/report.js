@@ -8,22 +8,7 @@ const jwtUtils = require('../../../module/jwt');
 const authUtil = require("../../../module/utils/authUtils");
 const cron = require('node-cron')
 const moment = require('moment')
-
-function changeName(categoryCode){
-    if (categoryCode === '0101') {
-        return '프리미엄'
-    } else if (categoryCode === '0102') {
-        return '뷰티'
-    } else if (categoryCode === '0103') {
-        return '맛집'
-    } else if (categoryCode === '0104') {
-        return '여행'
-    } else if (categoryCode === '0105') {
-        return '문화'
-    } else if (categoryCode === '0106') {
-        return '기타'
-    }
-}
+const common = require("../../../module/common");
 
 router.get('/', authUtil.isLoggedin, async (req, res) => {
     // 개별 리포트 토탈
@@ -87,7 +72,7 @@ router.get('/info', authUtil.isLoggedin, async (req, res) => {
         const sum = selectTop3Result[0]['sum']
         const counts = selectTop3Result[0]['counts']
         const views = (sum / counts).toFixed(1)
-        resData['top'].push({'name': changeName(categoryCode), 'views': views === 'NaN' ? '0' : views })
+        resData['top'].push({'name': common.changeKRName(categoryCode), 'views': views === 'NaN' ? '0' : views })
     }
     // console.log(resData)
     // console.log(selectTop3Result);
