@@ -27,7 +27,7 @@ const notifyMessage = require('../../../module/utils/notifyMessage')
 /* GET home page. */
 
 router.get("/law", isLoggedin ,async function(req, res) {//질문
-    const selectQaQuery = `SELECT expertConsultIdx, categoryCode, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE categoryCode = '0201' ORDER BY AnswerUpdateAt DESC `;
+    const selectQaQuery = `SELECT expertConsultIdx, userIdx ,categoryCode, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE categoryCode = '0201' ORDER BY AnswerUpdateAt DESC `;
 
     const selectQaResult = await db.queryParam_None(selectQaQuery)
     let resData = [];
