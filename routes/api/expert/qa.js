@@ -32,9 +32,9 @@ router.get("/law", isLoggedin ,async function(req, res) {//질문
     const selectQaResult = await db.queryParam_None(selectQaQuery)
     let resData = [];
     resData = selectQaResult.map(element => {
-        return {...element, 'createAt' : Int(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : Int(moment(element.answerUpdateAt).format('YYMMDD'))}
+        return {...element, 'createAt' : parseInt(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : parseInt(moment(element.answerUpdateAt).format('YYMMDD'))}
     })
-    
+    console.log(resData);
     if (!selectQaResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)); // 작품 삭제 실패
     else if (resData.length == 0)
