@@ -89,6 +89,17 @@ module.exports = {
   INSERT_SUPPORTNEWS_SUCCESS: '서포트 뉴스 등록 성공',
   INSERT_SUPPORTNEWS_FAILED: '서포트 뉴스 등록 실패',
   
+  SELECT_USER_SUCCESS: '유저 개별 조회 성공',
+  SELECT_USER_FAILED: '유저 개별 조회 실패',
+  SELECT_USER_INTEREST_SUCCESS: '유저 관심사 조회 성공',
+  SELECT_USER_INTEREST_FAILED: '유저 관심사 조회 실패',
+  UPDATE_USER_SUCCESS: '유저 정보 변경 성공',
+  UPDATE_USER_FAILED: '유저 정보 변경 실패',
+  UPDATE_USER_INTEREST_SUCCESS: '유저 관심사 변경 성공',
+  UPDATE_USER_INTEREST_FAILED: "유저 관심사 변경 실패",
+  UPDATE_USER_IMAGE_SUCCESS:'유저 이미지 변경 성공',
+  UPDATE_USER_IMAGE_FAILED: '유저 이미지 변경 실패'
+
 
 
 }

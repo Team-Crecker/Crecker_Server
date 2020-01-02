@@ -263,14 +263,17 @@ router.post('/write', authUtils.isLoggedin ,async(req,res) => {
     
     const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl,isAgree, userIdx) VALUES(?,?,?,?,?,?,?,?,?,?)'
     const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, progress, createAt) VALUES (?,?,?,?)';
-    
+    const getPlanQuery = `SELECT planIdx FROM Plan WHERE phone=${req.body.phone}`;
     const writeTransaction = db.Transaction(async connection => {
         const getWriteResult = await connection.query(getWriteQuery,[req.body.title, req.body.subtitle,req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl,req.body.isAgree, req.decoded.idx]);
         const postWriteResult = await connection.query(postWriteQuery,[req.decoded.idx, req.body.adIdx, 1, moment().format('YYYY-MM-DD HH:mm:ss')]);
     })
+    const getPlanResult = await db.queryParam_None(getPlanQuery);
+    const putUserAdQuery = `UPDATE UserAd SET planIdx = ${getPlanResult[0].planIdx} WHERE adIdx=${req.body.adIdx} AND userIdx=${req.decoded.idx}`;
     
-    
-    if (!writeTransaction){
+    const putUserAdResult = await db.queryParam_None(putUserAdQuery);
+
+    if (!writeTransaction || !putUserAdResult){
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
     res.status(200).send(defaultRes.successTrue(statusCode.OK,"기획서 작성 성공"));
