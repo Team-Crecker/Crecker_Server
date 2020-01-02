@@ -118,17 +118,30 @@ router.get("/:progress/:idx", async (req, res) => {
 });
 
 router.post("/confirm/", async (req, res) => {
-    const idx = req.body.idx;
-    const adIdx = req.body.adIdx
-    // const confirmQuery = `UPDATE INTO UserAd as a (progress) VALUES (?) JOIN a. WHERE `
-    // INSERT NOTIFICATION 
+    const {userIdx, adIdx} = req.body;
+    const updateConfirmQuery = `UPDATE UserAd SET progress = 2, updateAt = '${moment().format('YYYY-MM-DD HH:mm:ss')}' WHERE userIdx = ${userIdx} AND adIdx = ${adIdx}`;
+    const updateConfirmResult = await db.queryParam_None(updateConfirmQuery);
+    console.log(updateConfirmResult)
+    const selectAdQuery = `SELECT categoryCode, thumbnail FROM Ad WHERE adIdx=${adIdx}`;
+    const selectAdResult = await db.queryParam_None(selectAdQuery);
+    console.log(selectAdResult)
+    const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
+    
+    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [`'${selectAdResult[0].categoryCode}'`, '신청한 광고에 배정 되었습니다', selectAdResult[0].thumbnail, userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
 
+    
+    if (!updateConfirmResult || !insertNotifyResult)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "광고 배정 완료")); 
+    // INSERT NOTIFICATION 
 });
 
 router.post("/notConfirm/", async (req, res) => {
     const idx = req.body.idx;
-    const adIdx = req.body.adIdx
-    
+    const adIdx = req.body.adIdx;
+
+
     // INSERT NOTIFICATION 
     // 광고가 배정되지 않았습니다.
 });
@@ -168,14 +181,39 @@ router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
 })
 
 router.get('/ing', async (req, res) => {
+    const {userIdx, adIdx} = req.body;
+    const selectConfirmQuery = `SELECT UserAd SET progress = 3 WHERE userIdx = ${userIdx} adIdx = ${adIdx}`;
+    const selectConfirmResult = await db.queryParam_None(selectConfirmQuery);
+
+    if (!selectConfirmResult)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "광고 검증 조회 완료")); 
     // SELECT UserAd에서 progress=3인것만 리스트로 보여주면 됨
     // UserAd idx, Adidx, Useridx, 
 })
 
-router.post('/ing', async (req, res) => {
+router.put('/ing', async (req, res) => {
     // Update UserAd에서 progress=3인것을 4로 바꾸는 로직
-    const idx = req.body.idx;
-    const adIdx = req.body.adIdx
+    const {userIdx, adIdx} = req.body;
+    const updateConfirmQuery = `UPDATE UserAd SET progress = 4, updateAt = ${moment().format('YYYY-MM-DD')} WHERE userIdx = ${userIdx} AND adIdx = ${adIdx} AND progress = 3`;
+    const updateConfirmResult = await db.queryParam_None(updateConfirmQuery);
+
+    const selectCashQuery = `SELECT categoryCode,cash,thumbnail FROM Ad WHERE adIdx = ${adIdx}`;
+    const selectCashResult = await db.queryParam_None(selectCashQuery);
+
+    const updateUserQuery = `UPDATE User SET cash = cash + '${selectCashResult[0].cash}' WHERE userIdx=${userIdx}`
+    const updateUserResult = await db.queryParam_None(updateUserQuery);
+
+    const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
+    
+    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [selectCashResult[0].categoryCode, '광고의 리워드가 적립 되었습니다', selectCashResult[0].thumbnail, userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
+    if (!updateConfirmResult || !selectCashResult || !updateUserResult || !insertNotifyResult)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "광고 진척 상황 수정 완료")); 
+    
+    
     // UserAd의 progress=4로 바꿔줌
     // User.cash += Ad.price
     // 리워드가 적립되었습니다. cash를 확인해보세요

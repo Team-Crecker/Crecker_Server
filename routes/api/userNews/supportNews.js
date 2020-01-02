@@ -74,30 +74,4 @@ router.get("/:idx", isLoggedin ,async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공", selectUseradResult));    // 작품 삭제 성공 
 });
 
-router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
-    const {thumbnails, publishedAt, viewCount, likeCount} = req.youtubeData;
-    const {adIdx ,url, review} = req.body;
-
-    const insertVideoInfoQuery = `INSERT INTO VideoInfo (thumbnail, url, uploadDate, review, likes, views1) VALUES (?,?,?,?,?,?)`;
-    const insertVideoInfoResult = await db.queryParam_Arr(insertVideoInfoQuery, [thumbnails, url, publishedAt, review, likeCount, viewCount]);
-
-    const selectVideoInfoQuery = `SELECT videoInfoIdx FROM VideoInfo WHERE url = '${url}'`;
-    const updateUserAdQuery = `UPDATE UserAd SET progress = 3, updateAt = ?, videoInfoIdx = ? WHERE userIdx=? AND adIdx=?`;
-    
-    const selectVideoInfoResult = await db.queryParam_None(selectVideoInfoQuery);
-
-    console.log(selectVideoInfoResult);
-    if (!selectVideoInfoResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "셀렉트"));    // 작품 삭제 성공
-
-    const updateUserAdResult = await db.queryParam_Arr(updateUserAdQuery,[moment().format('YYYY-MM-DD HH:mm:ss'), selectVideoInfoResult[0].videoInfoIdx, req.decoded.idx, adIdx])
-
-    if(!insertVideoInfoResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "인서트"));    // 작품 삭제 성공
-    else if (!updateUserAdResult)
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "업데이트"));    // 작품 삭제 성공
-    else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "유저 광고 개별 조회 성공")); 
-})
-
 module.exports = router;

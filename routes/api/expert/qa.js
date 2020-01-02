@@ -124,14 +124,22 @@ router.post("/law", isLoggedin , async function(req, res) {
     
 });
 
-router.put("/law" , isLoggedin , async (req, res) => {
+router.put("/law" , async (req, res) => {
     // 전문가 답변
-    const {expertConsultIdx, Acontent, isComplete} = req.body;
-    const expertIdx = req.decoded.idx;
+    const {expertConsultIdx, Acontent, isComplete, expertIdx} = req.body;
     const updateQaQuery = `UPDATE ExpertConsult SET Acontent = ?, isComplete = ?, answerUpdateAt = ?, expertIdx= ? WHERE expertConsultIdx=?`; // 답변 완료
     const updateQaResult = await db.queryParam_Arr(updateQaQuery, [Acontent, isComplete, moment().format('YYYY-MM-DD HH:mm:ss'), expertIdx ,expertConsultIdx]);
     
-    if (!updateQaResult)
+    const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
+    const selectExpertQuery = `SELECT categoryCode, photo FROM Expert WHERE expertIdx=${expertIdx}`;
+    const selectUserQuery = `SELECT userIdx FROM expertConsult WHERE expertConsultIdx = ${expertConsultIdx}`
+    const selectUserResult = await db.queryParam_None(selectUserQuery);
+    const selectExpertResult = await db.queryParam_None(selectExpertQuery);
+    
+    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [selectExpertResult[0].categoryCode, '전문가 답변이 완료 되었습니다.', selectExpertResult[0].photo, selectUserResult[0].userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
+
+
+    if (!updateQaResult || !selectUserResult || !selectExpertResult || !insertNotifyResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else   
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 답변 입력 성공"));    // 작품 삭제 성공
@@ -151,7 +159,18 @@ router.put("/apply" , isLoggedin , async function(req, res) {
     const updateLawQuery = `UPDATE ExpertConsult SET name = ?, Cdate = ?, isSuccess = ?, consultUpdateAt = ?, Ccontent = ? WHERE expertConsultIdx = ?`; // 답변 완료
     const updateLawResult = await db.queryParam_Arr(updateLawQuery, [name ,moment(Cdate+Ctime, 'YYYY/ MM/ DDA hh : mm').format('YYYY-MM-DD HH:mm:ss'), 1, moment().format('YYYY-MM-DD HH:mm:ss'), Ccontent,expertConsultIdx])
 
-    if (!updateLawResult)
+    const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
+    const selectExpertConsultQuery = `SELECT expertIdx FROM ExpertConsult WHERE expertConsultIdx = ${expertConsultIdx}`
+    const selectExpertConsultResult = await db.queryParam_None(selectExpertConsultQuery);
+
+    console.log(selectExpertConsultResult);
+    const selectNotifyQuery = `SELECT photo FROM Expert WHERE expertIdx=${selectExpertConsultResult[0].expertIdx}`;
+    const selectNotifyResult = await db.queryParam_None(selectNotifyQuery);
+    
+    const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, ['0201', '상담 신청이 완료 되었습니다.', selectNotifyResult[0].photo, req.decoded.idx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
+
+
+    if (!updateLawResult || !selectExpertConsultResult || !selectNotifyResult || !insertNotifyResult)
         res.status(500).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "법률 상담 입력 성공"));    // 작품 삭제 성공

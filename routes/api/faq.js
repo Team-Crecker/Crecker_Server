@@ -32,7 +32,7 @@ router.get('/', isLoggedin, async (req, res) => {
     if (!selectFaqResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 조회 성공", selectFaqResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "FAQ 전체 조회 성공", selectFaqResult));    // 작품 삭제 성공
 
 })
 
@@ -54,7 +54,7 @@ router.post("/", async (req, res) => {
     if (!insertFaqResult)
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "DB 오류 입니다"));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, "뉴스 입력 성공"));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "FAQ 입력 성공"));    // 작품 삭제 성공
 });
 
 module.exports = router;
