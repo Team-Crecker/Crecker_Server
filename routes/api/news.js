@@ -81,10 +81,14 @@ router.get('/support', isLoggedin ,async (req, res) => {
     const selectNewsQuery = 'SELECT * FROM SupportNews ORDER BY calendarStart ASC';
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
+    let resData = selectNewsResult.map(element => {
+        return {...element, dday: moment().diff(element.calendarEnd,'days')}
+    })
+
     if (!selectNewsResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_SUPPORTNEWS_SUCCESS, selectNewsResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_SUPPORTNEWS_SUCCESS, resData));    // 작품 삭제 성공
 })
 
 router.get('/recommand/:flag', isLoggedin, async (req, res) => { 

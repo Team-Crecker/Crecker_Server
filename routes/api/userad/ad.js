@@ -180,7 +180,7 @@ router.post("/notConfirm/", async (req, res) => {
     // 광고가 배정되지 않았습니다.
 });
 
-router.get("/auth/auth/auth", isLoggedin, authVideo, async (req, res) => {
+router.post("/auth/auth/auth", isLoggedin, authVideo, async (req, res) => {
     const resData = {};
     resData.thumbnails = req.youtubeData.thumbnails;
     resData.publishedAt = moment(req.youtubeData.publishedAt).format('YY/ MM/ DD');
