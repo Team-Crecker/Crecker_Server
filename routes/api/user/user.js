@@ -33,7 +33,7 @@ router.get('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 �
 router.put('/', authUtil.isLoggedin ,async (req, res) => {
     const {phone, location} = req.body;
     const idx = req.decoded.idx
-    const updateUserQuery = `UPDATE User SET phone=${phone}, location=${location}  WHERE userIdx = ${idx}`;
+    const updateUserQuery = `UPDATE User SET phone='${phone}', location='${location}'  WHERE userIdx = ${idx}`;
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 
     if (!updateUserResult)
@@ -44,7 +44,7 @@ router.put('/', authUtil.isLoggedin ,async (req, res) => {
 router.put('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 디비 수정 요망
     const {typeAd, typeExpert, typeNews} = req.body;
     const idx = req.decoded.idx
-    const updateUserQuery = `UPDATE User SET typeAd=${typeAd}, typeExpert=${typeExpert}, typeNews=${typeNews}  WHERE userIdx = ${idx}`;
+    const updateUserQuery = `UPDATE User SET typeAd='${typeAd}', typeExpert='${typeExpert}', typeNews='${typeNews}'  WHERE userIdx = ${idx}`;
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 
     if (!updateUserResult)
@@ -56,7 +56,7 @@ router.put('/interest', authUtil.isLoggedin ,async (req, res) => { //관심사 �
 router.put('/profileImage', authUtil.isLoggedin, upload.single('profileImage') ,async (req, res) => { //관심사 디비 수정 요망
     const profileImage = req.file.location;
     const idx = req.decoded.idx
-    const updateUserQuery = `UPDATE User SET profileImage = ${profileImage} WHERE userIdx = ${idx}`;
+    const updateUserQuery = `UPDATE User SET profileImage = '${profileImage}' WHERE userIdx = ${idx}`;
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 
     if (!updateUserResult)
