@@ -13,18 +13,32 @@ const common = require("../../../module/common");
 router.get('/', authUtil.isLoggedin, async (req, res) => {
     // 개별 리포트 토탈
     const idx = req.decoded.idx
-    console.log(idx);
-    const selectPersonalReportQuery = `SELECT a.userAdIdx, b.title, b.companyName, d.likes, d.views1 FROM UserAd as a
+    
+    let resData = []
+
+    const selectPersonalReportQuery = `SELECT a.userAdIdx, b.title, b.companyName, d.likes, d.views1, b.categoryCode FROM UserAd as a
     JOIN Ad as b ON a.adIdx=b.adIdx
     JOIN User as c ON a.userIdx=c.userIdx
     JOIN VideoInfo as d ON a.videoInfoIdx=d.videoInfoIdx
     WHERE a.progress=4 ORDER BY b.uploadFrom DESC;`;
 
     const selectPersonalReportResult = await db.queryParam_None(selectPersonalReportQuery)
+    console.log(selectPersonalReportResult)
+    for (elem of selectPersonalReportResult) {
+        const userAdIdx = elem['userAdIdx']
+        const title = elem['title']
+        const companyName = elem['companyName']
+        const likes = elem['likes']
+        const views1 = elem['views1']
+        const categoryName = common.changeKRName(elem['categoryCode'])
+        resData.push({'userAdIdx': userAdIdx, 'title': title, 'companyName': companyName, 'likes': likes, 'views1': views1, 'categoryName': categoryName})
+    }
+
+    // resData.push({'userAdIdx': userAdIdx, 'title': title, 'companyName': companyName, 'likes': likes, 'views1': views1, 'categoryName': categoryName})
     if (!selectPersonalReportResult) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else {
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.PERSONAL_REPORT_SUCCESS, selectPersonalReportResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.PERSONAL_REPORT_SUCCESS, resData));
     }
 })
 
@@ -50,14 +64,14 @@ router.get('/info', authUtil.isLoggedin, async (req, res) => {
 
     const selectTotalResult = await db.queryParam_Arr(selectTotalQuery, [idx]);
     resData['totalViews'] = selectTotalResult[0]['totalViews1'];
-    resData['totalCounts'] = selectTotalResult[0]['totalLikes'];
+    resData['totalLikes'] = selectTotalResult[0]['totalLikes'];
     resData['totalCosts'] = selectTotalResult[0]['totalCosts'];
     resData['er'] = selectTotalResult[0]['er'];
-    resData['views1'] = selectTotalResult[0]['totalViews1'];
-    resData['views2'] = selectTotalResult[0]['totalViews2'];
-    resData['views3'] = selectTotalResult[0]['totalViews3'];
-    resData['views4'] = selectTotalResult[0]['totalViews4'];
-    resData['views5'] = selectTotalResult[0]['totalViews5'];
+    resData['totalViews1'] = selectTotalResult[0]['totalViews1'];
+    resData['totalViews2'] = selectTotalResult[0]['totalViews2'];
+    resData['totalViews3'] = selectTotalResult[0]['totalViews3'];
+    resData['totalViews4'] = selectTotalResult[0]['totalViews4'];
+    resData['totalViews5'] = selectTotalResult[0]['totalViews5'];
 
     const selectTop3Query = `SELECT SUM(d.views1) as sum, COUNT(*) as counts FROM UserAd as a
     JOIN Ad as b ON a.adIdx=b.adIdx
@@ -67,12 +81,15 @@ router.get('/info', authUtil.isLoggedin, async (req, res) => {
 
     const categoryCodeList = ['0101', '0102', '0103', '0104', '0105', '0106'];
     let selectTop3Result
-    for (categoryCode of categoryCodeList) {
+    for (const [i, categoryCode] of categoryCodeList.entries()) {
+        if (i === 3) {
+            break;
+        }
         selectTop3Result = await db.queryParam_Arr(selectTop3Query, [categoryCode]);
         const sum = selectTop3Result[0]['sum']
         const counts = selectTop3Result[0]['counts']
         const views = (sum / counts).toFixed(1)
-        resData['top'].push({'name': common.changeKRName(categoryCode), 'views': views === 'NaN' ? '0' : views })
+        resData['top'].push({'name': common.changeENGName(categoryCode), 'views': views === 'NaN' ? 0 : parseInt(views) })
     }
     resData['top'].sort(function(a, b) {
         return b['views'] - a['views'];
@@ -83,7 +100,7 @@ router.get('/info', authUtil.isLoggedin, async (req, res) => {
     if (!selectTop3Result || !selectTop3Result) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else {
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.PERSONAL_REPORT_SUCCESS, resData));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.TOTAL_REPORT_SUCCESS, resData));
     }
 })
 

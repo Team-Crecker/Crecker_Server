@@ -98,9 +98,7 @@ module.exports = {
   UPDATE_USER_INTEREST_SUCCESS: '유저 관심사 변경 성공',
   UPDATE_USER_INTEREST_FAILED: "유저 관심사 변경 실패",
   UPDATE_USER_IMAGE_SUCCESS:'유저 이미지 변경 성공',
-  UPDATE_USER_IMAGE_FAILED: '유저 이미지 변경 실패'
-
-
-
+  UPDATE_USER_IMAGE_FAILED: '유저 이미지 변경 실패',
+  TOTAL_REPORT_SUCCESS: '토탈 리포트 조회 성공'
 }
  

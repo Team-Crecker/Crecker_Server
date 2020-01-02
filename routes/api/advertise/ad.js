@@ -32,7 +32,7 @@ router.put('/pick', async(req,res) => {
     };
     
     if (!updatePickResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
         res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",updatePickResult));
     }
@@ -54,7 +54,6 @@ for(let i=0; i<getHeaderResult.length; i++){
         subtitle:"",
         dday:''
     };
-
 
 
     item.thumbnail = getHeaderResult[i].thumbnail;
@@ -80,7 +79,7 @@ console.log(ddayfull)
 }
 console.log(getHeaderResult);
 if (!getHeaderResult){
-    res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+    res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
 } else{
 res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 홈 상단 헤더 이미지 성공",resData));
 }
@@ -97,7 +96,7 @@ router.get('/interest', authUtils.isLoggedin, async(req,res) => {
     const getInterestResult = await db.queryParam_Parse(getInterestQuery,[req.decoded.typeAd])
 
      if (!getInterestResult){
-         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
      } else{
      res.status(200).send(defaultRes.successTrue(statusCode.OK,"맞춤형 광고 성공", getInterestResult));
      }
@@ -111,7 +110,7 @@ router.get('/popular',authUtils.isLoggedin,async(req,res) => {
     const getPopularResult = await db.queryParam_None(getPopularQuery);
 
     if (!getPopularResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
     res.status(200).send(defaultRes.successTrue(statusCode.OK,"인기순 광고 성공",getPopularResult));
     }
@@ -125,7 +124,7 @@ router.get('/latest',authUtils.isLoggedin,async (req,res) => {
     const getLatestResult = await db.queryParam_None(getLatestQuery);
     
     if (!getLatestResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
     res.status(200).send(defaultRes.successTrue(statusCode.OK,"최신순 광고 성공",getLatestResult));
     }
@@ -175,7 +174,7 @@ router.get('/list/:flag',authUtils.isLoggedin,async (req,res) => {
     };
   
     if (!getCategoryResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
     res.status(200).send(defaultRes.successTrue(statusCode.OK,"카테고리 광고 불러오기 성공",resData));
     }
@@ -212,7 +211,7 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
     console.log(insertAdResult);
 
     if (!insertAdResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
         res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
     }
@@ -234,9 +233,9 @@ router.get('/detail/:idx',authUtils.isLoggedin, async(req,res) => {
     convert(getDetailResult[0]);
 
     if (!getDetailResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "디테일 조회 DB 실패"));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, "디테일 조회 DB 실패"));
     }else if(!updateViewsResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, "조회수 수정 실패"));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, "조회수 수정 실패"));
     } else{
     res.status(200).send(defaultRes.successTrue(statusCode.OK,"광고 조회 성공", {'ad': getDetailResult, 'subscribers': subscribers}));
     }
@@ -250,7 +249,7 @@ router.get('/apply',authUtils.isLoggedin, async(req,res) => {
     const getApplyResult = await db.queryParam_Parse(getApplyQuery,[req.decoded.idx]);
 
     if (!getApplyResult){
-        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
     res.status(200).send(defaultRes.successTrue(statusCode.OK,"기획서 가져오기 성공",getApplyResult));
     }
