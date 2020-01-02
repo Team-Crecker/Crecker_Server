@@ -6,7 +6,7 @@ const authUtil = {
         return moment().format('YY.MM.DD HH:mm:ss')
     },
 
-    changeKRName = (categoryCode)  => {
+    changeKRName : (categoryCode)  => {
         if (categoryCode === '0101') {
             return '프리미엄'
         } else if (categoryCode === '0102') {
@@ -22,7 +22,7 @@ const authUtil = {
         }
     },
 
-    changeENGName = (categoryCode)  => {
+    changeENGName : (categoryCode)  => {
         if (categoryCode === '0101') {
             return 'Primium'
         } else if (categoryCode === '0102') {
