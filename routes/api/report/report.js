@@ -74,6 +74,9 @@ router.get('/info', authUtil.isLoggedin, async (req, res) => {
         const views = (sum / counts).toFixed(1)
         resData['top'].push({'name': common.changeKRName(categoryCode), 'views': views === 'NaN' ? '0' : views })
     }
+    resData['top'].sort(function(a, b) {
+        return b['views'] - a['views'];
+    })
     // console.log(resData)
     // console.log(selectTop3Result);
 
