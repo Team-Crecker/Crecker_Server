@@ -27,8 +27,27 @@
 
 
 # Dependency Module
-
-
+```json
+"dependencies": {
+    "aws-sdk": "^2.596.0",
+    "axios": "^0.19.0",
+    "cookie-parser": "~1.4.4",
+    "crypto-promise": "^2.1.0",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "morgan": "~1.9.1",
+    "multer": "^1.4.2",
+    "multer-s3": "^2.9.0",
+    "node-cron": "^2.0.3",
+    "promise-mysql": "^3.3.1",
+    "rand-token": "^0.4.0",
+    "short-unique-id": "^1.1.1"
+  }
+```
 
 
 # Goal
@@ -55,6 +74,7 @@ crypto, Oauth 2.0, Jwt, Restful, 통신방법
 
 #### [2019.12.29]
 cron, youtube api, json2csv, git (API 70% 완성 예상)
+
 
 # Team Role
 
@@ -98,6 +118,8 @@ cron, youtube api, json2csv, git (API 70% 완성 예상)
 #### 양정훈 [luciferkala](https://github.com/luciferkala)
 #### 유희수 [yooheesoo](https://github.com/yooheesoo)
 #### 장인규 [inguuu](https://github.com/inguuu)
+
+
 
 
 # Plan
