@@ -31,7 +31,7 @@
 
 
 
-# 목표 
+# Goal
 
 • 매일 20분씩 IT 상식 공유
 
@@ -45,7 +45,7 @@
 • 모두가 Crecker를 이해하기 
 
 
-# 일정 
+# Schedule
 
 #### [2019.12.27]
 다 같이 API, DB 리뷰 
@@ -106,7 +106,7 @@ cron, youtube api, json2csv, git (API 70% 완성 예상)
 
 #### [2020 1.2 서버 통신 시작]
 
-#### [100% 달성]
+#### ✔️ [100% 달성]
 
 Docker, Kubernetes, MVC-Sequlize, MongoDB, 보안, NginX, elastic-search 등 실습
 
