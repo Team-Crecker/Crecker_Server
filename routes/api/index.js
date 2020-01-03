@@ -14,4 +14,5 @@ router.use('/youtube', require('./youtube/index'))
 router.use('/faq', require('./faq'))
 router.use('/notice', require('./notice'))
 router.use('/usernews', require('./userNews'))
+router.use('/home', require('./home'))
 module.exports = router;
