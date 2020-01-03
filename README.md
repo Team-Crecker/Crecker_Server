@@ -22,7 +22,8 @@
 
 # ERD
 
-![스크린샷 2020-01-03 오후 10 58 49](https://user-images.githubusercontent.com/36567887/71727495-c5a5f980-2e7d-11ea-9a88-f26a42185d84.png)
+![ERD!](https://user-images.githubusercontent.com/36567887/71727774-ab205000-2e7e-11ea-947e-bb0c9ab29f02.png)
+
 
 
 # Server-Architecture 
