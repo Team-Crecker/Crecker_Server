@@ -62,7 +62,7 @@ cron, youtube api, json2csv, git (API 70% 완성 예상)
 #### 제갈윤
 #### 양정훈
 #### 유희수
-#### 장인규 github.com/inguuu
+#### 장인규 [inguuu](github.com/inguuu)
 
 #### [이후 계획]
 
