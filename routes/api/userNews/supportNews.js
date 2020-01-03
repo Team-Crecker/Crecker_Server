@@ -35,22 +35,26 @@ router.get("/", isLoggedin, async (req, res) => {
     const selectUserNewsQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE a.userIdx=${userIdx} AND a.isScrapped = 1 ORDER BY b.calendarEnd DESC`
     const selectUserNewsResult = await db.queryParam_None(selectUserNewsQuery)
 
+    let resData = selectUserNewsResult.map(element => {
+        return {...element, dday: moment().diff(element.calendarEnd,'days'), createAt: moment(element.createAt).format('YY.MM.DD'), updateAt: moment(element.createAt).format('YY.MM.DD'), calendarStart: moment(element.calendarStart).format('YY.MM.DD'), calendarEnd: moment(element.calendarEnd).format('YY.MM.DD')}
+    })
+
     if (!selectUserNewsResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, selectUserNewsResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, resData));
     
 });
 
-router.get("/:idx", isLoggedin ,async (req, res) => {
-    const userIdx = req.decoded.idx;
-    const selectUseradQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE a.userIdx=${userIdx} AND a.isScrapped = 1 AND a.newsIdx = ${req.params.idx}`
-    const selectUseradResult = await db.queryParam_None(selectUseradQuery)
+// router.get("/:idx", isLoggedin ,async (req, res) => {
+//     const userIdx = req.decoded.idx;
+//     const selectUseradQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE a.userIdx=${userIdx} AND a.isScrapped = 1 AND a.newsIdx = ${req.params.idx}`
+//     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
-    if (!selectUseradResult)
-        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
-    else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, selectUseradResult));    // 작품 삭제 성공 
-});
+//     if (!selectUseradResult)
+//         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
+//     else
+//         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USERNEWS_SUCCESS, selectUseradResult));    // 작품 삭제 성공 
+// });
 
 module.exports = router;

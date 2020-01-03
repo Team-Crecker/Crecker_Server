@@ -83,7 +83,8 @@ router.get('/daily', isLoggedin ,async (req, res) => {
 })
 
 router.get('/support', isLoggedin ,async (req, res) => { 
-    const selectNewsQuery = 'SELECT * FROM SupportNews ORDER BY calendarStart ASC';
+    // const selectNewsQuery = 'SELECT * FROM SupportNews ORDER BY calendarStart ASC';
+    const selectNewsQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx ORDER BY b.calendarEnd DESC`
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
     let resData = selectNewsResult.map(element => {
