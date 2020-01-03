@@ -80,12 +80,19 @@ router.get("/:progress", isLoggedin, async (req, res) => {
     if (req.params.progress == 2) {
         for (var element of selectUseradResult) { //모멘트값 일자까지
             const isWarn = alerm(element);
+            element.createAt = parseInt(moment(element.createAt).format('YYMMDD'))
+            element.uploadTo = parseInt(moment(element.uploadTo).format('YYMMDD'))
             if (isWarn)
                 element.isWarn = 1;
             else
                 element.isWarn = 0;
         }
-    } 
+    } else {
+        for (var element of selectUseradResult) { //모멘트값 일자까지
+            element.createAt = parseInt(moment(element.createAt).format('YYMMDD'))
+            element.uploadTo = parseInt(moment(element.uploadTo).format('YYMMDD'))
+        }
+    }  
 
     if (!selectUseradResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
