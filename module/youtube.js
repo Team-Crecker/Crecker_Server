@@ -17,7 +17,7 @@ module.exports = {
         const youtubeData = {};
         try {
              getData = await axios.get(apiUrl);
-             console.log(getData.data.items[0]);
+            //  console.log(getData.data.items[0]);
              youtubeData.thumbnails = getData.data.items[0].snippet.thumbnails.high.url;
              youtubeData.publishedAt = getData.data.items[0].snippet.publishedAt;
              youtubeData.viewCount = getData.data.items[0].statistics.viewCount;
@@ -27,7 +27,7 @@ module.exports = {
             console.log(error)
             res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.INSERT_VIDEOINFO_FAILED)) 
         }
-        console.log(req.youtubeData);
+        // console.log(req.youtubeData);
         //썸네일, 업로드 날짜, 좋아요 수, 조회수 
         next();
 
@@ -48,7 +48,7 @@ module.exports = {
             
             res.status(500).send(defaultRes.successFalse(statusCode.INTERNAL_SERVER_ERROR, resMessage.ID_NO)) 
         }
-        console.log(req.youtubeData);
+        // console.log(req.youtubeData);
         // 구독자 수        
         next();
     }

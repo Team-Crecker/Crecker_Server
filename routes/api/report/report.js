@@ -23,7 +23,7 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
     WHERE a.progress=4 ORDER BY b.uploadFrom DESC;`;
 
     const selectPersonalReportResult = await db.queryParam_None(selectPersonalReportQuery)
-    console.log(selectPersonalReportResult)
+    // console.log(selectPersonalReportResult)
     for (elem of selectPersonalReportResult) {
         const userAdIdx = elem['userAdIdx']
         const title = elem['title']
@@ -109,7 +109,7 @@ router.get('/:userAdIdx', authUtil.isLoggedin, async (req, res) => {
     // 개별 리포트 상세
     const idx = req.decoded.idx
     const userAdIdx = req.params.userAdIdx
-    console.log(idx);
+    // console.log(idx);
     const selectPersonalReportQuery = `SELECT a.userAdIdx, b.title, b.companyName, b.uploadTo, b.updateAt, b.cash, d.likes, d.views1, d.views2, d.views3, d.views4, d.views5 FROM UserAd as a
     JOIN Ad as b ON a.adIdx=b.adIdx
     JOIN User as c ON a.userIdx=c.userIdx

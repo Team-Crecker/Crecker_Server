@@ -21,7 +21,7 @@ router.put('/pick', async (req, res) => {
     //자동으로 isPick을 0으로 모두 초기화시킴
     const updatePickQuery = 'UPDATE Ad SET isPick = 0'
     const updatePickResult = await db.queryParam_None(updatePickQuery);
-    console.log(req.body.adIdx)
+    (req.body.adIdx)
 
     //관리자가 선택한 값을 1로 변경 
     // const putPickQuery = 'UPDATE Ad SET isPick = 1 WHERE adIdx = ?'
@@ -29,7 +29,7 @@ router.put('/pick', async (req, res) => {
 
     for (let i of req.body.adIdx) {
         const updatePickQuery2 = 'UPDATE Ad SET isPick = 1 WHERE adIdx =? ';
-        // console.log(i)
+        // (i)
         const updatePickResult2 = await db.queryParam_Arr(updatePickQuery2, [i]);
     };
 
@@ -62,7 +62,7 @@ router.get('/random', authUtils.isLoggedin, async (req, res) => {
         item.subtitle = getHeaderResult[i].subtitle;
         item.adIdx = getHeaderResult[i].adIdx;
 
-        console.log(getHeaderResult[0].applyTo);
+        // console.log(getHeaderResult[0].applyTo);
         var t1 = moment(getHeaderResult[i].applyTo, 'YYYY-MM-DD HH:mm');
         var t2 = moment();
 
@@ -70,7 +70,7 @@ router.get('/random', authUtils.isLoggedin, async (req, res) => {
         let ddayfull = moment.duration(t2.diff(t1)).asDays();
         //6.231323
         let ddayfullstring = ddayfull.toString();
-        console.log(ddayfull)
+        // console.log(ddayfull)
         let dday = ddayfullstring.split(".");
 
         item.dday = Number(dday[0]);
@@ -78,7 +78,7 @@ router.get('/random', authUtils.isLoggedin, async (req, res) => {
         resData.push(item);
 
     }
-    console.log(getHeaderResult);
+    // console.log(getHeaderResult);
     if (!getHeaderResult) {
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else {
@@ -92,7 +92,7 @@ router.get('/random', authUtils.isLoggedin, async (req, res) => {
 //광고 맞춤형 
 router.get('/interest', authUtils.isLoggedin, async (req, res) => {
 
-    console.log(req.decoded.typeAd);
+    // console.log(req.decoded.typeAd);
     const getInterestQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad WHERE categoryCode = ?'
     const getInterestResult = await db.queryParam_Parse(getInterestQuery, [req.decoded.typeAd])
 
@@ -217,9 +217,9 @@ router.post('/insert', upload.array('imgs'), async (req, res) => {
         subscribersNum
     } = req.body;
     const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it => it.location);
-    console.log(title)
-    console.log(thumbnail)
-    console.log(req.files)
+    // console.log(title)
+    // console.log(thumbnail)
+    // console.log(req.files)
     const insertAdQuery = `INSERT INTO Ad (thumbnail, title, subtitle, cash, applyFrom, applyTo,
     choice, uploadFrom, uploadTo, completeDate, summaryPhoto, fullPhoto, preference,
     campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, createAt, subscribers, subscribersNum)
@@ -230,7 +230,7 @@ router.post('/insert', upload.array('imgs'), async (req, res) => {
         reward, keyword, campaignMission, addInfo, categoryCode, moment().format('YYYY-MM-DD'), subscribers, subscribersNum
     ]);
 
-    console.log(insertAdResult);
+    // console.log(insertAdResult);
 
     if (!insertAdResult) {
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
@@ -248,7 +248,7 @@ router.get('/detail/:idx', authUtils.isLoggedin, async (req, res) => {
     const getSubscribersQuery = 'SELECT * FROM User WHERE userIdx = ?'
     const getSubscribersResult = await db.queryParam_Parse(getSubscribersQuery, [req.decoded.idx]);
     const subscribers = getSubscribersResult[0]['subscribers']
-    console.log(subscribers)
+    // console.log(subscribers)
     const updateViewsQuery = 'UPDATE Ad SET views = views+1 WHERE adIdx=?'
     const updateViewsResult = await db.queryParam_Parse(updateViewsQuery, [req.params.idx]);
 
@@ -283,7 +283,7 @@ router.get('/apply', authUtils.isLoggedin, async (req, res) => {
 
 //기획서 내용 입력
 router.post('/write', authUtils.isLoggedin, async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
 
     const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl,isAgree, userIdx) VALUES(?,?,?,?,?,?,?,?,?,?)'
     const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, progress, createAt) VALUES (?,?,?,?)';

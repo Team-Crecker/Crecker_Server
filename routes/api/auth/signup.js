@@ -28,9 +28,9 @@ router.post('/', async (req, res) => {
     const selectIdQuery = 'SELECT * FROM User WHERE email = ?'
     const selectIdResult = await db.queryParam_Parse(selectIdQuery, email);
     const signupQuery = 'INSERT INTO User (email, password, phone, location, name, channelName, youtubeUrl, agreement, notRegisterUrl, salt, isAuth, typeAd, typeExpert, typeNews) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    console.log(selectIdResult);
+    // console.log(selectIdResult);
     if (selectIdResult[0] == null) {
-        console.log("일치 없음");
+        // console.log("일치 없음");
         const buf = await crypto.randomBytes(64);
         const salt = buf.toString('base64');
         const hashedPw = await crypto.pbkdf2(password, salt, 1000, 32, 'SHA512')
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
             res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SIGNUP_SUCCESS));
         }
     } else {
-        console.log("이미 존재");
+        // console.log("이미 존재");
         res.status(200).send(defaultRes.successFalse(statusCode.OK, resMessage.DUPLICATED_ID_FAIL));
     }
 });

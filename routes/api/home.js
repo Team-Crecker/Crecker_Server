@@ -32,7 +32,7 @@ router.get('/', isLoggedin, async (req, res) => {
     const randomData = data[Math.floor(Math.random() * data.length)];
     const rand = parseInt(moment()) % 3;
     // console.log(rand)
-    console.log(rand)
+    // console.log(rand)
     if (!data)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else

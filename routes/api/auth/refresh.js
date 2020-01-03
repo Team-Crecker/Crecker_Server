@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
             res.status(200).send(defaultRes.successFalse(statusCode.OK, resMessage.NOT_CORRECT_REFRESH_TOKEN_USER));
         } else {
             const newAccessToken = jwtUtils.refresh(selectUserResult[0]);
-            console.log("newAccessToken: ", newAccessToken);
+            // console.log("newAccessToken: ", newAccessToken);
             res.status(statusCode.OK).send(defaultRes.successTrue(statusCode.OK, resMessage.REFRESH_TOKEN, newAccessToken));
         }
 
