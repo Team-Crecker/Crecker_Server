@@ -22,9 +22,12 @@
 
 # ERD
 
+![스크린샷 2020-01-03 오후 10 58 49](https://user-images.githubusercontent.com/36567887/71727495-c5a5f980-2e7d-11ea-9a88-f26a42185d84.png)
+
 
 # Server-Architecture 
 
+![KakaoTalk_Photo_2020-01-03-23-04-10](https://user-images.githubusercontent.com/36567887/71727450-9d1dff80-2e7d-11ea-9df2-db0956cf6a79.png)
 
 # Dependency Module
 ```json
