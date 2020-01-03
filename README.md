@@ -26,7 +26,7 @@
 
 ![ERD!](https://user-images.githubusercontent.com/36567887/71727774-ab205000-2e7e-11ea-947e-bb0c9ab29f02.png)
 
-# 핵심기능 
+# Main Function 
 ### 1. 로그인 유튜브 인증 
  jwt 토근구현
 
