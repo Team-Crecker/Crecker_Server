@@ -199,6 +199,7 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
     const [thumbnail, summaryPhoto, fullPhoto] = req.files.map(it=> it.location);
     console.log(title)
     console.log(thumbnail)
+    console.log(req.files)
     const insertAdQuery =`INSERT INTO Ad (thumbnail, title, subtitle, cash, applyFrom, applyTo,
     choice, uploadFrom, uploadTo, completeDate, summaryPhoto, fullPhoto, preference,
     campaignInfo, url, reward, keyword, campaignMission, addInfo, categoryCode, createAt, subscribers, subscribersNum)
@@ -213,7 +214,7 @@ router.post('/insert',upload.array('imgs'),async(req,res)=>{
     if (!insertAdResult){
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else{
-        res.status(200).send(defaultRes.successTrue(statusCode.OK,"resMessage.INSERT_AD_SUCCESS"));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK,resMessage.INSERT_AD_SUCCESS));
     }
 });
 

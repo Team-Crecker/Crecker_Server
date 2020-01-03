@@ -12,6 +12,7 @@ const resMessage = require("../../../module/utils/responseMessage");
 const db = require("../../../module/pool");
 const isLoggedin = require('../../../module/utils/authUtils').isLoggedin;
 const notifyMessage = require('../../../module/utils/notifyMessage')
+const common = require('../../../module/common');
 /*   
     idx
     제목
@@ -34,7 +35,7 @@ router.get("/law", isLoggedin ,async function(req, res) {//질문
     const selectQaResult = await db.queryParam_None(selectQaQuery)
     let resData = [];
     resData = selectQaResult.map(element => {
-        return {...element, isOkConsult: element.userIdx == req.decoded.idx ? true : false ,createAt : parseInt(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : parseInt(moment(element.answerUpdateAt).format('YYMMDD'))}
+        return {...element, categoryCode: common.changeENGName(categoryCode) ,isOkConsult: element.userIdx == req.decoded.idx ? true : false ,createAt : parseInt(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : parseInt(moment(element.answerUpdateAt).format('YYMMDD'))}
     })
     console.log(resData);
     if (!selectQaResult)
@@ -111,7 +112,7 @@ router.get("/law/:idx", isLoggedin ,async function(req, res) {
         const selectResult = await connection.query(selectQuery);
         
         resData = selectQaResult.map(element => {
-            return {...element, isOkConsult: isOkConsult ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
+            return {...element, categoryCode: common.changeENGName(element.categoryCode)  , isOkConsult: isOkConsult ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
         })
         
     });
