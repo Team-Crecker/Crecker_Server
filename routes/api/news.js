@@ -53,14 +53,16 @@ router.get('/daily/:idx', isLoggedin, async (req, res) => {
 
 router.get('/support/:idx', isLoggedin, async (req, res) => {
     const idx = req.params.idx; 
-    const selectNewsQuery = `SELECT * FROM SupportNews WHERE newsIdx=${idx}`;
+    const userIdx = req.decoded.idx;
+    // const selectNewsQuery = `SELECT * FROM SupportNews WHERE newsIdx=${idx}`;
+    const selectNewsQuery = `SELECT * FROM UserNews as a RIGHT JOIN SupportNews as b ON a.newsIdx=b.newsIdx WHERE b.newsIdx = ${idx}`
     const updateNewsQuery = `UPDATE SupportNews SET views = views+1 WHERE newsIdx=${idx}`;
     
     const updateNewsResult = await db.queryParam_None(updateNewsQuery);
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
     const resData = selectNewsResult.map(element => {
-        return {...element, dday: moment().diff(element.calendarEnd,'days'), createAt: moment(element.createAt).format('YY.MM.DD'), updateAt: moment(element.createAt).format('YY.MM.DD'), calendarStart: moment(element.calendarStart).format('YY.MM.DD'), calendarEnd: moment(element.calendarEnd).format('YY.MM.DD')}
+        return {...element, isScrapped: false, dday: moment().diff(element.calendarEnd,'days'), createAt: moment(element.createAt).format('YY.MM.DD'), updateAt: moment(element.createAt).format('YY.MM.DD'), calendarStart: moment(element.calendarStart).format('YY.MM.DD'), calendarEnd: moment(element.calendarEnd).format('YY.MM.DD')}
     }) 
 
     if (!updateNewsResult || !selectNewsResult)
@@ -83,8 +85,8 @@ router.get('/daily', isLoggedin ,async (req, res) => {
 })
 
 router.get('/support', isLoggedin ,async (req, res) => { 
-    // const selectNewsQuery = 'SELECT * FROM SupportNews ORDER BY calendarStart ASC';
-    const selectNewsQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx ORDER BY b.calendarEnd DESC`
+    const selectNewsQuery = 'SELECT * FROM SupportNews ORDER BY calendarStart ASC';
+    // const selectNewsQuery = `SELECT * FROM UserNews as a JOIN SupportNews as b ON a.newsIdx=b.newsIdx ORDER BY b.calendarEnd DESC`
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
     let resData = selectNewsResult.map(element => {

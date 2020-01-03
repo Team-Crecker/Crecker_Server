@@ -34,6 +34,8 @@ router.put('/', authUtil.isLoggedin , upload.single('profileImage') ,async (req,
     const {phone, location} = req.body;
     const profileImage = req.file.location || 'https://crecker1.s3.ap-northeast-2.amazonaws.com/default_image.png';
     const idx = req.decoded.idx
+    console.log(req.file)
+    console.log(req.body)
     const updateUserQuery = `UPDATE User SET profileImage = '${profileImage}' ,phone='${phone}', location='${location}'  WHERE userIdx = ${idx}`;
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 
