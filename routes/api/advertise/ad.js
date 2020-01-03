@@ -259,7 +259,7 @@ router.get('/detail/:idx', authUtils.isLoggedin, async (req, res) => {
     } else {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, "광고 조회 성공", {
             'ad': getDetailResult,
-            'subscribers': subscribers
+            'subscribers': subscribers ? subscribers : 0
         }));
     }
 
