@@ -62,7 +62,7 @@ router.get('/support/:idx', isLoggedin, async (req, res) => {
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
     const resData = selectNewsResult.map(element => {
-        return {...element, isScrapped: false, dday: moment().diff(element.calendarEnd,'days'), createAt: moment(element.createAt).format('YY.MM.DD'), updateAt: moment(element.createAt).format('YY.MM.DD'), calendarStart: moment(element.calendarStart).format('YY.MM.DD'), calendarEnd: moment(element.calendarEnd).format('YY.MM.DD')}
+        return {...element, isScrapped: (element.isScrapped == "") ? false : true, dday: moment().diff(element.calendarEnd,'days'), createAt: moment(element.createAt).format('YY.MM.DD'), updateAt: moment(element.createAt).format('YY.MM.DD'), calendarStart: moment(element.calendarStart).format('YY.MM.DD'), calendarEnd: moment(element.calendarEnd).format('YY.MM.DD')}
     }) 
 
     if (!updateNewsResult || !selectNewsResult)
