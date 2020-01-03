@@ -28,11 +28,13 @@ const notifyMessage = require('../../../module/utils/notifyMessage')
 
 router.get("/law", isLoggedin ,async function(req, res) {//질문
     const selectQaQuery = `SELECT expertConsultIdx, userIdx ,categoryCode, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE categoryCode = '0201' ORDER BY AnswerUpdateAt DESC `;
+    
+    // const selectQaResult1 = await connection.query(selectQaQuery);
 
     const selectQaResult = await db.queryParam_None(selectQaQuery)
     let resData = [];
     resData = selectQaResult.map(element => {
-        return {...element, 'createAt' : parseInt(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : parseInt(moment(element.answerUpdateAt).format('YYMMDD'))}
+        return {...element, isOkConsult: element.userIdx == req.decoded.idx ? true : false ,createAt : parseInt(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : parseInt(moment(element.answerUpdateAt).format('YYMMDD'))}
     })
     console.log(resData);
     if (!selectQaResult)
@@ -90,8 +92,12 @@ router.get("/law/:idx", isLoggedin ,async function(req, res) {
     //질문 답변 개별 조회
     const {idx}  = req.params; 
     const myIdx = req.decoded.idx;
-    const selectQaQuery = `SELECT b.expertConsultIdx, b.userIdx ,a.expertIdx, a.name, a.description, a.photo, b.categoryCode, b.Qtitle, b.Qcontent, b.Acontent ,b.isComplete, b.isSecret, b.views ,b.createAt, b.answerUpdateAt FROM Expert AS a JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.expertConsultIdx = ${idx};`
+    const selectFirstQuery = `SELECT expertConsultIdx, expertIdx,userIdx ,Qtitle,Qcontent,categoryCode,isSecret,createAt FROM ExpertConsult WHERE expertConsultIdx = ${idx};`
     const updateQaQuery = `UPDATE ExpertConsult SET views = views +1 WHERE expertConsultIdx = ${idx}`;
+    let selectFirstResult = await db.queryParam_None(selectFirstQuery);
+
+    if (!selectFirstResult[0].expertIdx == "") {
+    const selectQaQuery = `SELECT b.expertConsultIdx, b.userIdx, a.expertIdx, a.name, a.description, a.photo, b.categoryCode, b.Qtitle, b.Qcontent, b.Acontent ,b.isComplete, b.isSecret, b.views ,b.createAt, b.answerUpdateAt FROM Expert AS a JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.expertConsultIdx = ${idx};`
     
     let selectQaResult;
     let resData = [];
@@ -113,6 +119,28 @@ router.get("/law/:idx", isLoggedin ,async function(req, res) {
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_QUESTION_SUCCESS, resData));    // 작품 삭제 성공
+    }
+        else {
+
+                let resData = [];
+                let userIdxAd;
+            
+                const updateQaResult = await db.queryParam_None(updateQaQuery);
+                userIdxAd = selectFirstResult[0].userIdx;
+                const isOkConsult = (myIdx === userIdxAd) ? true : false;
+                const selectQuery = `SELECT email FROM User WHERE userIdx=${userIdxAd}`
+                const selectResult = await db.queryParam_None(selectQuery);
+                
+                resData = selectFirstResult.map(element => {
+                    return {...element, isOkConsult: isOkConsult ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
+                })
+                
+
+        if (!updateQaResult || !selectFirstResult || !selectResult)
+            res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패    
+        else
+            res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_QUESTION_SUCCESS, resData));    // 작품 삭제 성공
+        }
 });
 
 
