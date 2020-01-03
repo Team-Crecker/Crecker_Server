@@ -35,7 +35,7 @@ router.get("/law", isLoggedin ,async function(req, res) {//질문
     const selectQaResult = await db.queryParam_None(selectQaQuery)
     let resData = [];
     resData = selectQaResult.map(element => {
-        return {...element, categoryCode: common.changeENGName(element.categoryCode) ,isOkConsult: element.userIdx == req.decoded.idx ? true : false ,createAt : parseInt(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : parseInt(moment(element.answerUpdateAt).format('YYMMDD'))}
+        return {...element, categoryCode: common.changeENGName(element.categoryCode) , isUser: element.userIdx == req.decoded.idx ? true : false ,createAt : parseInt(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : parseInt(moment(element.answerUpdateAt).format('YYMMDD'))}
     })
     console.log(resData);
     if (!selectQaResult)
@@ -107,12 +107,12 @@ router.get("/law/:idx", isLoggedin ,async function(req, res) {
         const updateQaResult = await connection.query(updateQaQuery);
         selectQaResult = await connection.query(selectQaQuery);
         userIdxAd = selectQaResult[0].userIdx;
-        const isOkConsult = (myIdx === userIdxAd) ? true : false;
+        const isUser = (myIdx === userIdxAd) ? true : false;
         const selectQuery = `SELECT email FROM User WHERE userIdx=${userIdxAd}`
         const selectResult = await connection.query(selectQuery);
         
         resData = selectQaResult.map(element => {
-            return {...element, categoryCode: common.changeENGName(element.categoryCode)  , isOkConsult: isOkConsult ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
+            return {...element, categoryCode: common.changeENGName(element.categoryCode)  , isUser: isUser ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
         })
         
     });
