@@ -16,7 +16,6 @@ const authUtil = {
             return res.json(util.successFalse(statusCode.BAD_REQUEST, resMessage.EMPTY_TOKEN));
         } else {
             //만든 jwt 모듈 사용하여 토큰 확인
-            console.log(token)
             const user = jwt.verify(token);
 
             if (user == -3) {
