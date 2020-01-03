@@ -14,6 +14,8 @@
 ### API: https://github.com/Team-Crecker/Crecker_Server/wiki
 
 
+
+
 # WorkFlow
 
 ![workflow](https://user-images.githubusercontent.com/49789734/71712001-ccfde080-2e46-11ea-9a56-15d13646ef64.png)
@@ -24,6 +26,20 @@
 
 ![ERD!](https://user-images.githubusercontent.com/36567887/71727774-ab205000-2e7e-11ea-947e-bb0c9ab29f02.png)
 
+# 핵심기능 
+### 1. 로그인 유튜브 인증 
+   - 등록한 URI를 Youtube API로 인증 하는 과정을 거침 
+
+### 2. 사용자 맞춤형 광고를 제공
+
+### 3. 사용자 맞춤형 뉴스를 제공 
+
+### 4. 광고 등록 기능 
+
+### 5. FAQ 
+
+### 6. 광고의 조회수 서버스 
+    - 등록한를 자동으로 스케쥴링하여서 클라이언트에게 그래프 값을 제공 
 
 
 # Server-Architecture 
