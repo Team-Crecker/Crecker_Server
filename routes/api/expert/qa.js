@@ -93,9 +93,7 @@ router.get("/law/:idx", isLoggedin ,async function(req, res) {
     //질문 답변 개별 조회
     const {idx}  = req.params; 
     const myIdx = req.decoded.idx;
-    const selectFirstQuery = `SELECT expertConsultIdx, expertIdx,userIdx ,Qtitle,Qcontent,categoryCode,isSecret,createAt FROM ExpertConsult WHERE expertConsultIdx = ${idx};`
     const updateQaQuery = `UPDATE ExpertConsult SET views = views +1 WHERE expertConsultIdx = ${idx}`;
-    let selectFirstResult = await db.queryParam_None(selectFirstQuery);
 
     const selectQaQuery = `SELECT b.expertConsultIdx, b.userIdx, a.expertIdx, a.name, a.description, a.photo, b.categoryCode, b.Qtitle, b.Qcontent, b.Acontent ,b.isComplete, b.isSecret, b.views ,b.createAt, b.answerUpdateAt FROM Expert AS a RIGHT JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.expertConsultIdx = ${idx};`
     
@@ -119,28 +117,6 @@ router.get("/law/:idx", isLoggedin ,async function(req, res) {
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_QUESTION_SUCCESS, resData));    // 작품 삭제 성공
-    // }
-    //     else {
-
-    //             let resData = [];
-    //             let userIdxAd;
-            
-    //             const updateQaResult = await db.queryParam_None(updateQaQuery);
-    //             userIdxAd = selectFirstResult[0].userIdx;
-    //             const isUser = (myIdx === userIdxAd) ? true : false;
-    //             const selectQuery = `SELECT email FROM User WHERE userIdx=${userIdxAd}`
-    //             const selectResult = await db.queryParam_None(selectQuery);
-                
-    //             resData = selectFirstResult.map(element => {
-    //                 return {...element, categoryCode: common.changeENGName(element.categoryCode), isUser: isUser ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
-    //             })
-                
-
-    //     if (!updateQaResult || !selectFirstResult || !selectResult)
-    //         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패    
-    //     else
-    //         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_QUESTION_SUCCESS, resData));    // 작품 삭제 성공
-    //     }
 });
 
 

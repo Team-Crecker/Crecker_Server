@@ -73,6 +73,8 @@ module.exports = {
   SELECT_USERNEWS_FAILED: '스크랩 뉴스 조회 실패',
   INSERT_USERNEWS_SUCCESS: '스크랩 뉴스 등록 성공',
   INSERT_USERNEWS_FAILED: '스크랩 뉴스 등록 실패',
+  DELETE_USERNEWS_SUCCESS: '스크랩 뉴스 삭제 성공',
+  DELETE_USERNEWS_FAILED: '스크랩 뉴스 삭제 실패',
 
   SELECT_FAQ_SUCCESS: 'FAQ 조회 성공',
   SELECT_FAQ_FAILED: 'FAQ 조회 실패',

@@ -40,10 +40,14 @@ router.get('/daily/:idx', isLoggedin, async (req, res) => {
     const selectDailyQuery = `SELECT * FROM DailyNews WHERE dailyIdx=${idx}`;
     const selectDailyResult = await db.queryParam_None(selectDailyQuery);
 
+    const resData = selectDailyResult.map(element => {
+        return {...element, createAt: moment(element.createAt).format('YY.MM.DD'), updateAt: moment(element.updateAt).format('YY.MM.DD')}
+    })
+
     if (!selectDailyResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_DAILYNEWS_SUCCESS, selectDailyResult));    // 작품 삭제 성공 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_DAILYNEWS_SUCCESS, resData));    // 작품 삭제 성공 
 });
 
 
@@ -52,11 +56,12 @@ router.get('/support/:idx', isLoggedin, async (req, res) => {
     const selectNewsQuery = `SELECT * FROM SupportNews WHERE newsIdx=${idx}`;
     const updateNewsQuery = `UPDATE SupportNews SET views = views+1 WHERE newsIdx=${idx}`;
     
-    let resData = [];
-    
     const updateNewsResult = await db.queryParam_None(updateNewsQuery);
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
-    resData = selectNewsResult;
+
+    const resData = selectNewsResult.map(element => {
+        return {...element, dday: moment().diff(element.calendarEnd,'days'), createAt: moment(element.createAt).format('YY.MM.DD'), updateAt: moment(element.createAt).format('YY.MM.DD'), calendarStart: moment(element.calendarStart).format('YY.MM.DD'), calendarEnd: moment(element.calendarEnd).format('YY.MM.DD')}
+    }) 
 
     if (!updateNewsResult || !selectNewsResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
@@ -74,7 +79,7 @@ router.get('/daily', isLoggedin ,async (req, res) => {
     if (!selectNewsResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_DAILYNEWS_SUCCESS, selectNewsResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_DAILYNEWS_SUCCESS, resData));    // 작품 삭제 성공
 })
 
 router.get('/support', isLoggedin ,async (req, res) => { 
@@ -82,7 +87,7 @@ router.get('/support', isLoggedin ,async (req, res) => {
     const selectNewsResult = await db.queryParam_None(selectNewsQuery)
 
     let resData = selectNewsResult.map(element => {
-        return {...element, dday: moment().diff(element.calendarEnd,'days')}
+        return {...element, dday: moment().diff(element.calendarEnd,'days'), createAt: moment(element.createAt).format('YY.MM.DD'), updateAt: moment(element.createAt).format('YY.MM.DD'), calendarStart: moment(element.calendarStart).format('YY.MM.DD'), calendarEnd: moment(element.calendarEnd).format('YY.MM.DD')}
     })
 
     if (!selectNewsResult)
@@ -99,10 +104,13 @@ router.get('/recommand/:flag', isLoggedin, async (req, res) => {
         selectNewsQuery = 'SELECT * FROM SupportNews ORDER BY calendarStart ASC';
     const selectNewsResult = await db.queryParam_None(selectNewsQuery);
 
+    const resData = selectNewsResult.map(element => {
+        return {...element, dday: moment().diff(element.calendarEnd,'days'), createAt: moment(element.createAt).format('YY.MM.DD'), updateAt: moment(element.createAt).format('YY.MM.DD'), calendarStart: moment(element.calendarStart).format('YY.MM.DD'), calendarEnd: moment(element.calendarEnd).format('YY.MM.DD')}
+    })
     if (!selectNewsResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_SUPPORTNEWS_SUCCESS, selectNewsResult));    // 작품 삭제 성공 
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_SUPPORTNEWS_SUCCESS, resData));    // 작품 삭제 성공 
 })
 
 router.post("/support", upload.single('poster'), async (req, res) => {
@@ -134,6 +142,18 @@ router.post("/scrap", isLoggedin ,async (req, res) => {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.INSERT_USERNEWS_SUCCESS));    // 작품 삭제 성공
+});
+
+router.delete("/scrap", isLoggedin ,async (req, res) => {
+    const {newsIdx} = req.body;
+    const userIdx = req.decoded.idx;
+    const deleteNewsQuery = `DELETE FROM UserNews WHERE userIdx=? AND newsIdx=?`;
+    const deleteNewsResult = await db.queryParam_Arr(deleteNewsQuery, [userIdx , newsIdx])
+
+    if (!deleteNewsResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.DELETE_USERNEWS_SUCCESS));    // 작품 삭제 성공
 });
 
 module.exports = router;
