@@ -11,7 +11,6 @@ const moment = require('moment');
 
 router.get('/', authUtil.isLoggedin, async (req, res) => {
     const idx  = req.decoded.idx; 
-    // console.log(req.body)
     const resData = {
         'cash': 0,
         'cashAllowed': 0,

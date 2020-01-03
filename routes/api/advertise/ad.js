@@ -91,8 +91,6 @@ router.get('/random', authUtils.isLoggedin, async (req, res) => {
 
 //광고 맞춤형 
 router.get('/interest', authUtils.isLoggedin, async (req, res) => {
-
-    // console.log(req.decoded.typeAd);
     const getInterestQuery = 'SELECT adIdx, thumbnail, title, cash FROM Ad WHERE categoryCode = ?'
     const getInterestResult = await db.queryParam_Parse(getInterestQuery, [req.decoded.typeAd])
 
