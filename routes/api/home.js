@@ -28,7 +28,7 @@ DB 오류 뜰 때
 router.get('/', isLoggedin, async (req, res) => { 
     // const selectFaqQuery = `SELECT * FROM faq`;
     // const selectFaqResult = await db.queryParam_None(selectFaqQuery)
-    const data = ['https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_1.png', 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_2.png', 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_3.png'];
+    const data = [{homeBannerIdx: 0, url: 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_1.png'}, {homeBannerIdx: 1, url : 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_2.png'}, {homeBannerIdx: 2, url: 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_3.png'}];
     const rand = parseInt(moment()) % 3;
     if (!data)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
