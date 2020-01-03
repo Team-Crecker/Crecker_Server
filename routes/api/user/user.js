@@ -14,6 +14,7 @@ router.get('/', authUtil.isLoggedin ,async (req, res) => { //프로필 사진, �
     const selectUserQuery = `SELECT profileImage, phone, location FROM User WHERE userIdx = ${idx}`;
     const selectUserResult = await db.queryParam_None(selectUserQuery);
 
+
     if (!selectUserResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)) 
     else
