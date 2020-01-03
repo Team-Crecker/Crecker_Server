@@ -99,14 +99,14 @@ cron, youtube api, json2csv, git (API 70% 완성 예상)
 #### 유희수 [yooheesoo](https://github.com/yooheesoo)
 #### 장인규 [inguuu](https://github.com/inguuu)
 
-#### [이후 계획]
 
+# Plan
 
 #### [2020 1.2 서버 개발 종료]
 
 #### [2020 1.2 서버 통신 시작]
 
-#### ✔️ [100% 달성]
+#### [100% 달성] ✔️
 
 Docker, Kubernetes, MVC-Sequlize, MongoDB, 보안, NginX, elastic-search 등 실습
 
