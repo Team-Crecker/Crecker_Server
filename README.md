@@ -27,12 +27,31 @@
 
 
 # Dependency Module
+```json
+"dependencies": {
+    "aws-sdk": "^2.596.0",
+    "axios": "^0.19.0",
+    "cookie-parser": "~1.4.4",
+    "crypto-promise": "^2.1.0",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "json2csv": "^4.5.4",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "morgan": "~1.9.1",
+    "multer": "^1.4.2",
+    "multer-s3": "^2.9.0",
+    "node-cron": "^2.0.3",
+    "promise-mysql": "^3.3.1",
+    "rand-token": "^0.4.0",
+    "short-unique-id": "^1.1.1"
+  }
+```
 
 
-
-
-
-# 목표 
+# Goal
 
 • 매일 20분씩 IT 상식 공유
 
@@ -46,7 +65,7 @@
 • 모두가 Crecker를 이해하기 
 
 
-# 일정 
+# Schedule
 
 #### [2019.12.27]
 다 같이 API, DB 리뷰 
@@ -57,6 +76,43 @@ crypto, Oauth 2.0, Jwt, Restful, 통신방법
 #### [2019.12.29]
 cron, youtube api, json2csv, git (API 70% 완성 예상)
 
+
+# Team Role
+
+#### 공통
+- 데이터베이스 설계
+- API 로직 설계 및 API 문서작성
+- Youtube API 기능 분석
+- 클라이언트 통신 및 유지 보수
+
+#### 양정훈
+- 전문가 기능 구현
+- 뉴스 기능 구현
+- My page 기능 구현
+- 홈 화면 기능 구현
+
+#### 유희수
+- 광고 기능 구현
+- 맞춤형 광고 기능 구현
+- 광고 기획서 등록, 조회 구현
+- 관리자 광고 관리 기능 구현
+
+#### 장인규
+- 팀원 코드 검토
+- 팀원 멘토링
+- 프로젝트 서버 파트 자문 
+- README.md 제작
+- 팀원 교육 학습 주도
+
+#### 제갈윤
+- 로그인 기능 및 JWT 인증 기능 
+- My Page 개인 리포트 기능 구현
+- My Page 캐시 기능 구현
+- 스케쥴링 기능 구현
+
+
+
+
 # Contributors
 
 #### 제갈윤 [jms0707](https://github.com/jms0707)
@@ -64,14 +120,16 @@ cron, youtube api, json2csv, git (API 70% 완성 예상)
 #### 유희수 [yooheesoo](https://github.com/yooheesoo)
 #### 장인규 [inguuu](https://github.com/inguuu)
 
-#### [이후 계획]
 
+
+
+# Plan
 
 #### [2020 1.2 서버 개발 종료]
 
 #### [2020 1.2 서버 통신 시작]
 
-#### [100% 달성]
+#### [100% 달성] ✔️
 
 Docker, Kubernetes, MVC-Sequlize, MongoDB, 보안, NginX, elastic-search 등 실습
 

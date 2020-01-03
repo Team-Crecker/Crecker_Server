@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
     // Instantiate
     const uid = new ShortUniqueId(8);
     const hashcode = uid.randomUUID(8)
-    console.log(hashcode)
+    // console.log(hashcode)
     res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.LOGIN_SUCCESS))
 })
 

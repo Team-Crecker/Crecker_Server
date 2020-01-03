@@ -37,7 +37,7 @@ router.get("/law", isLoggedin ,async function(req, res) {//질문
     resData = selectQaResult.map(element => {
         return {...element, categoryCode: common.changeENGName(element.categoryCode) , isUser: element.userIdx == req.decoded.idx ? true : false ,createAt : parseInt(moment(element.createAt).format('YYMMDD')), 'answerUpdateAt' : parseInt(moment(element.answerUpdateAt).format('YYMMDD'))}
     })
-    console.log(resData);
+    // console.log(resData);
     if (!selectQaResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)); // 작품 삭제 실패
     else if (resData.length == 0)
@@ -86,7 +86,7 @@ router.get("/consulted", isLoggedin , async function(req, res) { // 상담 신�
     const userIdx = req.decoded.idx;    
     const selectQaQuery = `SELECT a.expertIdx, a.name, a.experience, a.description, a.photo , b.Cdate, b.isSuccess FROM Expert AS a JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.userIdx = ${userIdx} AND b.Cdate IS NOT NULL;`
     const selectQaResult = await db.queryParam_None(selectQaQuery)
-    console.log(selectQaResult)
+    // console.log(selectQaResult)
     
     let resData = [];
     resData = selectQaResult.map(element => {
@@ -174,7 +174,7 @@ router.put("/law" , async (req, res) => {
 
 router.put("/apply" , isLoggedin , async function(req, res) {
     // 상담 신청
-    console.log(req.body)
+    // console.log(req.body)
     const {name, Cdate, Ctime, expertConsultIdx, Ccontent} = req.body;
     const user = req.decoded.idx;
     const updateLawQuery = `UPDATE ExpertConsult SET name = ?, Cdate = ?, isSuccess = ?, consultUpdateAt = ?, Ccontent = ? WHERE expertConsultIdx = ?`; // 답변 완료

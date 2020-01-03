@@ -41,7 +41,7 @@ const authUtil = {
         } else {
             //만든 jwt 모듈 사용하여 토큰 확인
             const user = jwt.verify(token);
-            console.log(user);
+            // console.log(user);
             if (user == -3) {
                 //유효기간이 지난 토큰일 때
                 return res.json(util.successFalse(statusCode.UNAUTHORIZED, resMessage.EXPRIED_TOKEN));

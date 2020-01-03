@@ -76,7 +76,7 @@ router.get("/:progress", isLoggedin, async (req, res) => {
         selectUseradQuery = `SELECT a.userAdIdx, b.adIdx, b.thumbnail, b.title, b.cash, b.createAt ,b.uploadTo FROM UserAd as a JOIN Ad as b ON a.adIdx=b.adIdx WHERE a.progress=4 AND a.userIdx=${userIdx} ORDER BY b.uploadFrom DESC`;
     const selectUseradResult = await db.queryParam_None(selectUseradQuery)
 
-    console.log(selectUseradResult)
+    // console.log(selectUseradResult)
     if (req.params.progress == 2) {
         for (var element of selectUseradResult) { //모멘트값 일자까지
             const isWarn = alerm(element);
@@ -162,10 +162,10 @@ router.post("/confirm" ,async (req, res) => {
     const {userIdx, adIdx} = req.body;
     const updateConfirmQuery = `UPDATE UserAd SET progress = 2, updateAt = '${moment().format('YYYY-MM-DD HH:mm:ss')}' WHERE userIdx = ${userIdx} AND adIdx = ${adIdx}`;
     const updateConfirmResult = await db.queryParam_None(updateConfirmQuery);
-    console.log(updateConfirmResult)
+    // console.log(updateConfirmResult)
     const selectAdQuery = `SELECT categoryCode, thumbnail FROM Ad WHERE adIdx=${adIdx}`;
     const selectAdResult = await db.queryParam_None(selectAdQuery);
-    console.log(selectAdResult)
+    // console.log(selectAdResult)
     const insertNotifyQuery = `INSERT INTO Notification (categoryCode, notiContent, thumbnail, userIdx ,createAt) VALUES (?,?,?,?,?)`;
     
     const insertNotifyResult = await db.queryParam_Arr(insertNotifyQuery, [`'${selectAdResult[0].categoryCode}'`, notifyMessage.CONFIRMED, selectAdResult[0].thumbnail, userIdx ,moment().format('YYYY-MM-DD HH:mm:ss')]);
@@ -234,7 +234,7 @@ router.post('/auth' , isLoggedin, authVideo, async (req, res) => {
 
 router.get('/ing/ing/ing', async (req, res) => {
     const {userIdx, adIdx} = req.body;
-    console.log(req.params)
+    // console.log(req.params)
     const selectConfirmQuery = `SELECT * FROM UserAd WHERE userIdx = ${userIdx} AND adIdx = ${adIdx} AND progress = '3'`;
     const selectConfirmResult = await db.queryParam_None(selectConfirmQuery);
 
@@ -254,7 +254,7 @@ router.put('/ing/', async (req, res) => {
 
     const selectCashQuery = `SELECT categoryCode,cash,thumbnail FROM Ad WHERE adIdx = ${adIdx}`;
     const selectCashResult = await db.queryParam_None(selectCashQuery);
-    console.log(selectCashResult)
+    // console.log(selectCashResult)
     const updateUserQuery = `UPDATE User SET cash = cash + '${selectCashResult[0].cash}' WHERE userIdx=${userIdx}`
     const updateUserResult = await db.queryParam_None(updateUserQuery);
 

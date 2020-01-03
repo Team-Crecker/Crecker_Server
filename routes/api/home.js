@@ -29,11 +29,14 @@ router.get('/', isLoggedin, async (req, res) => {
     // const selectFaqQuery = `SELECT * FROM faq`;
     // const selectFaqResult = await db.queryParam_None(selectFaqQuery)
     const data = [{homeBannerIdx: 0, url: 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_1.png'}, {homeBannerIdx: 1, url : 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_2.png'}, {homeBannerIdx: 2, url: 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_3.png'}];
+    const randomData = data[Math.floor(Math.random() * data.length)];
     const rand = parseInt(moment()) % 3;
+    // console.log(rand)
+    // console.log(rand)
     if (!data)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_FAQ_SUCCESS, data[rand]));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_FAQ_SUCCESS, randomData));    // 작품 삭제 성공
 
 })
 
