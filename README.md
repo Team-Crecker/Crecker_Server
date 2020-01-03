@@ -59,10 +59,10 @@ cron, youtube api, json2csv, git (API 70% 완성 예상)
 
 # Contributors
 
-#### 제갈윤
-#### 양정훈
-#### 유희수
-#### 장인규 [inguuu](github.com/inguuu)
+#### 제갈윤 [jms0707](https://github.com/jms0707)
+#### 양정훈 [luciferkala](https://github.com/luciferkala)
+#### 유희수 [yooheesoo](https://github.com/yooheesoo)
+#### 장인규 [inguuu](https://github.com/inguuu)
 
 #### [이후 계획]
 
