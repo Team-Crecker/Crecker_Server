@@ -23,31 +23,20 @@ router.post('/', async (req, res) => {
     const typeExpert = req.body.typeExpert;
     const typeNews = req.body.typeNews;
 
-    const hashcode = "dhdhdhdhd";
+    const notRegisterUrl = "dhdhdhdhd";
     const isAuth = 0
     const selectIdQuery = 'SELECT * FROM User WHERE email = ?'
     const selectIdResult = await db.queryParam_Parse(selectIdQuery, email);
-    const signupQuery = 'INSERT INTO User (email, password, phone, location, name, channelName, youtubeUrl, agreement, hashcode, salt, isAuth, typeAd, typeExpert, typeNews) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-
+    const signupQuery = 'INSERT INTO User (email, password, phone, location, name, channelName, youtubeUrl, agreement, notRegisterUrl, salt, isAuth, typeAd, typeExpert, typeNews) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    console.log(selectIdResult);
     if (selectIdResult[0] == null) {
         console.log("일치 없음");
         const buf = await crypto.randomBytes(64);
         const salt = buf.toString('base64');
         const hashedPw = await crypto.pbkdf2(password, salt, 1000, 32, 'SHA512')
         const signupResult = await db.queryParam_Arr(signupQuery, [email, hashedPw.toString('base64'), phone, location, name,
-            channelName, youtubeUrl, agreement, hashcode, salt, isAuth, typeAd, typeExpert, typeNews
+            channelName, youtubeUrl, agreement, notRegisterUrl, salt, isAuth, typeAd, typeExpert, typeNews
         ]);
-        userIdx = signupResult['insertId']
-
-
-
-        // for (var code of interest) {
-        //     const UserInterestQuery = 'INSERT INTO UserInterest (userIdx, categoryCodeIdx) VALUES (?, ?)';
-        //     const categoryIdxQuery = 'SELECT categoryCodeIdx FROM CategoryCode WHERE categoryCode=?'
-        //     const categoryIdxResult = await db.queryParam_Arr(categoryIdxQuery, [code]);
-        //     categoryCodeIdx = categoryIdxResult[0].categoryCodeIdx
-        //     const UserInterestResult = await db.queryParam_Arr(UserInterestQuery, [userIdx, categoryCodeIdx]);
-        // }
 
         if (!signupResult) {
             res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.SIGNUP_FAIL));
