@@ -28,7 +28,11 @@
 
 # 핵심기능 
 ### 1. 로그인 유튜브 인증 
-   - 등록한 URI를 Youtube API로 인증 하는 과정을 거침 
+ jwt 토근구현
+
+- rand-token, jsonwebtoken 모듈을 이용하여 accessToken 과 refreshToken을 발급받음
+- accessToken의 payload에 user의 indexing number, user의 관심분야에 대한 정보가 들어감
+- accessToken의 기한은 14일, refreshToken의 기한은 30일로 지정함
 
 ### 2. 사용자 맞춤형 광고를 제공
 
@@ -41,6 +45,16 @@
 ### 6. 광고의 조회수 서버스 
 - 등록한를 자동으로 스케쥴링하여서 클라이언트에게 그래프 값을 제공 
 
+### 7. 크리에이터, 유튜브 영상 정보 db 업데이트
+개인 맞춤형 기능을 구현하기 위해 광고, 전문가, 뉴스 테이블이 유저 테이블과 1:N 또는 N:M 관계로 연결되어있음
+
+사용자의 구독자 또는 사용자가 올린 광고 영상에 대한 조회수, 좋아요수, 댓글 수의 정보들은 tmux와 cron을 사용해 5시간마다 DB 업데이트를 하고 있음
+- tmux는 pseudoterminal을 window와 session 단위로 관리하는 도구로서 스케줄링 프로그램과 서버 api 서로 다른 pseudoterminal에서 실행할 수 있음
+
+
+cron으로 비디오 조회수, 좋아요 업데이트
+
+cron으로 유저 구독자 수 업데이트, totalViews 업데이트
 
 # Server-Architecture 
 
