@@ -93,55 +93,55 @@ router.get("/law/:idx", isLoggedin ,async function(req, res) {
     //질문 답변 개별 조회
     const {idx}  = req.params; 
     const myIdx = req.decoded.idx;
-    const selectFirstQuery = `SELECT expertConsultIdx, expertIdx,userIdx ,Qtitle,Qcontent,categoryCode,isSecret,createAt FROM ExpertConsult WHERE expertConsultIdx = ${idx};`
+    const selectFirstQuery = `SELECT * FROM ExpertConsult WHERE expertConsultIdx = ${idx};`
     const updateQaQuery = `UPDATE ExpertConsult SET views = views +1 WHERE expertConsultIdx = ${idx}`;
     let selectFirstResult = await db.queryParam_None(selectFirstQuery);
 
-    if (!selectFirstResult[0].expertIdx == "") {
-    const selectQaQuery = `SELECT b.expertConsultIdx, b.userIdx, a.expertIdx, a.name, a.description, a.photo, b.categoryCode, b.Qtitle, b.Qcontent, b.Acontent ,b.isComplete, b.isSecret, b.views ,b.createAt, b.answerUpdateAt FROM Expert AS a JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.expertConsultIdx = ${idx};`
+    // if (!selectFirstResult[0].expertIdx == "") {
+    // const selectQaQuery = `SELECT b.expertConsultIdx, b.userIdx, a.expertIdx, a.name, a.description, a.photo, b.categoryCode, b.Qtitle, b.Qcontent, b.Acontent ,b.isComplete, b.isSecret, b.views ,b.createAt, b.answerUpdateAt FROM Expert AS a JOIN ExpertConsult AS b ON a.expertIdx = b.expertIdx WHERE b.expertConsultIdx = ${idx};`
     
-    let selectQaResult;
+    // let selectQaResult;
     let resData = [];
     let userIdxAd;
-    const selectTransaction = await db.Transaction(async connection => {
-        const updateQaResult = await connection.query(updateQaQuery);
-        selectQaResult = await connection.query(selectQaQuery);
-        userIdxAd = selectQaResult[0].userIdx;
+    // const selectTransaction = await db.Transaction(async connection => {
+        const updateQaResult = await db.queryParam_None(updateQaQuery);
+        // selectQaResult = await connection.query(selectQaQuery);
+        userIdxAd = selectFirstResult[0].userIdx;
         const isUser = (myIdx === userIdxAd) ? true : false;
         const selectQuery = `SELECT email FROM User WHERE userIdx=${userIdxAd}`
-        const selectResult = await connection.query(selectQuery);
+        const selectResult = await db.queryParam_None(selectQuery);
         
-        resData = selectQaResult.map(element => {
+        resData = selectFirstResult.map(element => {
             return {...element, categoryCode: common.changeENGName(element.categoryCode)  , isUser: isUser ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
         })
         
-    });
-    if (!selectTransaction)
+    // });
+    if (!selectFirstResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_QUESTION_SUCCESS, resData));    // 작품 삭제 성공
-    }
-        else {
+    // }
+        // else {
 
-                let resData = [];
-                let userIdxAd;
+        //         let resData = [];
+        //         let userIdxAd;
             
-                const updateQaResult = await db.queryParam_None(updateQaQuery);
-                userIdxAd = selectFirstResult[0].userIdx;
-                const isOkConsult = (myIdx === userIdxAd) ? true : false;
-                const selectQuery = `SELECT email FROM User WHERE userIdx=${userIdxAd}`
-                const selectResult = await db.queryParam_None(selectQuery);
+        //         const updateQaResult = await db.queryParam_None(updateQaQuery);
+        //         userIdxAd = selectFirstResult[0].userIdx;
+        //         const isUser = (myIdx === userIdxAd) ? true : false;
+        //         const selectQuery = `SELECT email FROM User WHERE userIdx=${userIdxAd}`
+        //         const selectResult = await db.queryParam_None(selectQuery);
                 
-                resData = selectFirstResult.map(element => {
-                    return {...element, categoryCode: common.changeENGName(element.categoryCode),isOkConsult: isOkConsult ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
-                })
+        //         resData = selectFirstResult.map(element => {
+        //             return {...element, categoryCode: common.changeENGName(element.categoryCode), isUser: isUser ,email: selectResult[0].email,'createAt' : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
+        //         })
                 
 
-        if (!updateQaResult || !selectFirstResult || !selectResult)
-            res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패    
-        else
-            res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_QUESTION_SUCCESS, resData));    // 작품 삭제 성공
-        }
+        // if (!updateQaResult || !selectFirstResult || !selectResult)
+        //     res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패    
+        // else
+        //     res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_QUESTION_SUCCESS, resData));    // 작품 삭제 성공
+        // }
 });
 
 
