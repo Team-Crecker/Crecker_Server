@@ -48,26 +48,37 @@ router.get("/law", isLoggedin ,async function(req, res) {//질문
 
 router.get("/posted", isLoggedin , async function(req, res) { //내 질문
     const userIdx = req.decoded.idx;    
-    const selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE userIdx = ${userIdx} ORDER BY views DESC`;
+    // const selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE userIdx = ${userIdx} ORDER BY views DESC`;
+    const selectQaQuery = `SELECT expertConsultIdx, userIdx ,categoryCode, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE categoryCode = '0201' AND userIdx= ${userIdx} ORDER BY AnswerUpdateAt DESC `;
     const selectQaResult = await db.queryParam_None(selectQaQuery)
+
+    let resData = [];
+    resData = selectQaResult.map(element => {
+        return {...element, categoryCode: common.changeENGName(element.categoryCode) , isUser: element.userIdx == req.decoded.idx ? true : false ,createAt : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
+    })
 
     if (!selectQaResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_QUESTION_SUCCESS, selectQaResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_QUESTION_SUCCESS, resData));    // 작품 삭제 성공
 
 });
 
 router.get("/answered", isLoggedin ,async function(req, res) { //내 답변
     const userIdx = req.decoded.idx;    
-    const selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent,isComplete, isSecret, views , createAt, answerUpdateAt FROM ExpertConsult WHERE userIdx = ${userIdx} AND isComplete = 1 ORDER BY views DESC`;
-
+    // const selectQaQuery = `SELECT expertConsultIdx, Qtitle, Qcontent,isComplete, isSecret, views , createAt, answerUpdateAt FROM ExpertConsult WHERE userIdx = ${userIdx} AND isComplete = 1 ORDER BY views DESC`;
+    lectQaQuery = `SELECT expertConsultIdx, userIdx ,categoryCode, Qtitle, Qcontent, isComplete, isSecret, views ,createAt, answerUpdateAt FROM ExpertConsult WHERE categoryCode = '0201' AND userIdx= ${userIdx} AND isComplete = 1 ORDER BY AnswerUpdateAt DESC `;
     const selectQaResult = await db.queryParam_None(selectQaQuery)
+
+    let resData = [];
+    resData = selectQaResult.map(element => {
+        return {...element, categoryCode: common.changeENGName(element.categoryCode) , isUser: element.userIdx == req.decoded.idx ? true : false ,createAt : moment(element.createAt).format('YY.MM.DD'), 'answerUpdateAt' : moment(element.answerUpdateAt).format('YY.MM.DD')}
+    })
 
     if (!selectQaResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 실패
     else
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_ANSWER_SUCCESS, selectQaResult));    // 작품 삭제 성공
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_EXPERT_ANSWER_SUCCESS, resData));    // 작품 삭제 성공
 
 });
 
