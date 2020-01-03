@@ -16,7 +16,7 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
     
     let resData = []
 
-    const selectPersonalReportQuery = `SELECT a.userAdIdx, b.title, b.companyName, d.likes, d.views1, b.categoryCode FROM UserAd as a
+    const selectPersonalReportQuery = `SELECT a.userAdIdx, b.title, d.likes, d.views1, b.categoryCode FROM UserAd as a
     JOIN Ad as b ON a.adIdx=b.adIdx
     JOIN User as c ON a.userIdx=c.userIdx
     JOIN VideoInfo as d ON a.videoInfoIdx=d.videoInfoIdx
@@ -27,11 +27,10 @@ router.get('/', authUtil.isLoggedin, async (req, res) => {
     for (elem of selectPersonalReportResult) {
         const userAdIdx = elem['userAdIdx']
         const title = elem['title']
-        const companyName = elem['companyName']
         const likes = elem['likes']
         const views1 = elem['views1']
         const categoryName = common.changeKRName(elem['categoryCode'])
-        resData.push({'userAdIdx': userAdIdx, 'title': title, 'companyName': companyName, 'likes': likes, 'views1': views1, 'categoryName': categoryName})
+        resData.push({'userAdIdx': userAdIdx, 'title': title, 'likes': likes, 'views1': views1, 'categoryName': categoryName})
     }
 
     // resData.push({'userAdIdx': userAdIdx, 'title': title, 'companyName': companyName, 'likes': likes, 'views1': views1, 'categoryName': categoryName})
