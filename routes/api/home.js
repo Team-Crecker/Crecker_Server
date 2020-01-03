@@ -30,7 +30,7 @@ router.get('/', isLoggedin, async (req, res) => {
     // const selectFaqResult = await db.queryParam_None(selectFaqQuery)
     const data = ['https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_1.png', 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_2.png', 'https://crecker1.s3.ap-northeast-2.amazonaws.com/img_home_main_3.png'];
     const rand = Math.floor(Math.random() * data.length);
-    if (!resData)
+    if (!data)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
     else
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_FAQ_SUCCESS, data[rand]));    // 작품 삭제 성공
