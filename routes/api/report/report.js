@@ -142,11 +142,11 @@ router.get('/:userAdIdx', authUtil.isLoggedin, async (req, res) => {
     resData['views3'] = selectPersonalReportResult[0]['views3'];
     resData['views4'] = selectPersonalReportResult[0]['views4'];
     resData['views5'] = selectPersonalReportResult[0]['views5'];
-    resData['views1'] = resData['views1'] === null ? 0 : resData['views1']
-    resData['views2'] = resData['views2'] === null ? 0 : resData['views2']
-    resData['views3'] = resData['views3'] === null ? 0 : resData['views3']
-    resData['views4'] = resData['views4'] === null ? 0 : resData['views4']
-    resData['views5'] = resData['views5'] === null ? 0 : resData['views5']
+    resData['views1'] = resData['views1'] === "" ? 0 : resData['views1']
+    resData['views2'] = resData['views2'] === "" ? 0 : resData['views2']
+    resData['views3'] = resData['views3'] === "" ? 0 : resData['views3']
+    resData['views4'] = resData['views4'] === "" ? 0 : resData['views4']
+    resData['views5'] = resData['views5'] === "" ? 0 : resData['views5']
     if (!selectPersonalReportResult) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else {
