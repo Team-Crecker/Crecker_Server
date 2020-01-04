@@ -287,7 +287,7 @@ router.post('/write', authUtils.isLoggedin, async (req, res) => {
     const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, progress, createAt) VALUES (?,?,?,?)';
     // const getPlanQuery = `SELECT b.planIdx FROM UserAd as a JOIN Plan as b ON `
     console.log("req.body.phone", req.body.phone);
-    const getPlanQuery = `SELECT planIdx FROM Plan WHERE phone=${req.body.phone}`;
+    const getPlanQuery = `SELECT planIdx FROM Plan WHERE phone='${req.body.phone}'`;
     const writeTransaction = await db.Transaction(async connection => {
         const getWriteResult = await connection.query(getWriteQuery, [req.body.title, req.body.subtitle, req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl, req.body.isAgree, req.decoded.idx]);
         const postWriteResult = await connection.query(postWriteQuery, [req.decoded.idx, req.body.adIdx, 1, moment().format('YYYY-MM-DD HH:mm:ss')]);
