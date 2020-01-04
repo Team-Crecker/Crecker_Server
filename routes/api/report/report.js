@@ -109,6 +109,21 @@ router.get('/:userAdIdx', authUtil.isLoggedin, async (req, res) => {
     const idx = req.decoded.idx
     const userAdIdx = req.params.userAdIdx
     // console.log(idx);
+
+    let resData = {
+        'title': 0,
+        'uploadTo': 0,
+        'totalCosts': 0,
+        'updateAt': 0,
+        'cash': 0,
+        'likes': 0,
+        'views1': 0,
+        'views2': 0,
+        'views3': 0,
+        'views4': 0,
+        'views5': 0,
+    }
+
     const selectPersonalReportQuery = `SELECT a.userAdIdx, b.title, b.uploadTo, b.updateAt, b.cash, d.likes, d.views1, d.views2, d.views3, d.views4, d.views5 FROM UserAd as a
     JOIN Ad as b ON a.adIdx=b.adIdx
     JOIN User as c ON a.userIdx=c.userIdx
@@ -116,10 +131,22 @@ router.get('/:userAdIdx', authUtil.isLoggedin, async (req, res) => {
     WHERE a.userAdIdx=? ORDER BY b.uploadFrom DESC;`;
 
     const selectPersonalReportResult = await db.queryParam_Arr(selectPersonalReportQuery, [userAdIdx])
+    
+    resData['totalViews1'] = selectTotalResult[0]['title'];
+    resData['totalViews2'] = selectTotalResult[0]['uploadTo'];
+    resData['totalViews3'] = selectTotalResult[0]['totalCosts'];
+    resData['totalViews4'] = selectTotalResult[0]['updateAt'];
+    resData['totalViews5'] = selectTotalResult[0]['cash'];
+    resData['totalViews5'] = parseInt(selectTotalResult[0]['views1']);
+    resData['totalViews5'] = parseInt(selectTotalResult[0]['views2']);
+    resData['totalViews5'] = parseInt(selectTotalResult[0]['views3']);
+    resData['totalViews5'] = parseInt(selectTotalResult[0]['views4']);
+    resData['totalViews5'] = parseInt(selectTotalResult[0]['views5']);
+
     if (!selectPersonalReportResult) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
     } else {
-        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.PERSONAL_REPORT_SUCCESS, selectPersonalReportResult));
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.PERSONAL_REPORT_SUCCESS, resData));
     }
 })
 
