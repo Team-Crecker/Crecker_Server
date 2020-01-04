@@ -291,6 +291,7 @@ router.post('/write', authUtils.isLoggedin, async (req, res) => {
         const postWriteResult = await connection.query(postWriteQuery, [req.decoded.idx, req.body.adIdx, 1, moment().format('YYYY-MM-DD HH:mm:ss')]);
     })
     const getPlanResult = await db.queryParam_None(getPlanQuery);
+    console.log(getPlanResult);
     const putUserAdQuery = `UPDATE UserAd SET planIdx = ${getPlanResult[0].planIdx} WHERE adIdx=${req.body.adIdx} AND userIdx=${req.decoded.idx}`;
 
     const putUserAdResult = await db.queryParam_None(putUserAdQuery);
