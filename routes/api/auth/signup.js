@@ -19,9 +19,9 @@ router.post('/', async (req, res) => {
     const youtubeUrl = req.body.youtubeUrl;
     const agreement = req.body.agreement;
     const interest = req.body.interest;
-    const typeAd = req.body.typeAd;
-    const typeExpert = req.body.typeExpert;
-    const typeNews = req.body.typeNews;
+    // const typeAd = req.body.typeAd;
+    // const typeExpert = req.body.typeExpert;
+    // const typeNews = req.body.typeNews;
 
     const notRegisterUrl = "dhdhdhdhd";
     const isAuth = 0
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
         const salt = buf.toString('base64');
         const hashedPw = await crypto.pbkdf2(password, salt, 1000, 32, 'SHA512')
         const signupResult = await db.queryParam_Arr(signupQuery, [email, hashedPw.toString('base64'), phone, location, name,
-            channelName, youtubeUrl, agreement, notRegisterUrl, salt, isAuth, typeAd, typeExpert, typeNews
+            channelName, youtubeUrl, agreement, notRegisterUrl, salt, isAuth, interest[0], interest[1], interest[2]
         ]);
 
         if (!signupResult) {
