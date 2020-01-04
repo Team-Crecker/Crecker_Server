@@ -132,16 +132,16 @@ router.get('/:userAdIdx', authUtil.isLoggedin, async (req, res) => {
 
     const selectPersonalReportResult = await db.queryParam_Arr(selectPersonalReportQuery, [userAdIdx])
     
-    resData['totalViews1'] = selectTotalResult[0]['title'];
-    resData['totalViews2'] = selectTotalResult[0]['uploadTo'];
-    resData['totalViews3'] = selectTotalResult[0]['totalCosts'];
-    resData['totalViews4'] = selectTotalResult[0]['updateAt'];
-    resData['totalViews5'] = selectTotalResult[0]['cash'];
-    resData['totalViews5'] = parseInt(selectTotalResult[0]['views1']);
-    resData['totalViews5'] = parseInt(selectTotalResult[0]['views2']);
-    resData['totalViews5'] = parseInt(selectTotalResult[0]['views3']);
-    resData['totalViews5'] = parseInt(selectTotalResult[0]['views4']);
-    resData['totalViews5'] = parseInt(selectTotalResult[0]['views5']);
+    resData['totalViews1'] = selectPersonalReportResult[0]['title'];
+    resData['totalViews2'] = selectPersonalReportResult[0]['uploadTo'];
+    resData['totalViews3'] = selectPersonalReportResult[0]['totalCosts'];
+    resData['totalViews4'] = selectPersonalReportResult[0]['updateAt'];
+    resData['totalViews5'] = selectPersonalReportResult[0]['cash'];
+    resData['totalViews5'] = parseInt(selectPersonalReportResult[0]['views1']);
+    resData['totalViews5'] = parseInt(selectPersonalReportResult[0]['views2']);
+    resData['totalViews5'] = parseInt(selectPersonalReportResult[0]['views3']);
+    resData['totalViews5'] = parseInt(selectPersonalReportResult[0]['views4']);
+    resData['totalViews5'] = parseInt(selectPersonalReportResult[0]['views5']);
 
     if (!selectPersonalReportResult) {
         res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));
