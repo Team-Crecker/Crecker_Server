@@ -137,11 +137,11 @@ router.get('/:userAdIdx', authUtil.isLoggedin, async (req, res) => {
     resData['totalCosts'] = selectPersonalReportResult[0]['totalCosts'];
     resData['updateAt'] = selectPersonalReportResult[0]['updateAt'];
     resData['cash'] = selectPersonalReportResult[0]['cash'];
-    resData['views1'] = parseInt(selectPersonalReportResult[0]['views1']) === null;
-    resData['views2'] = parseInt(selectPersonalReportResult[0]['views2']);
-    resData['views3'] = parseInt(selectPersonalReportResult[0]['views3']);
-    resData['views4'] = parseInt(selectPersonalReportResult[0]['views4']);
-    resData['views5'] = parseInt(selectPersonalReportResult[0]['views5']);
+    resData['views1'] = selectPersonalReportResult[0]['views1'];
+    resData['views2'] = selectPersonalReportResult[0]['views2'];
+    resData['views3'] = selectPersonalReportResult[0]['views3'];
+    resData['views4'] = selectPersonalReportResult[0]['views4'];
+    resData['views5'] = selectPersonalReportResult[0]['views5'];
     resData['views1'] = resData['views1'] === null ? 0 : resData['views1']
     resData['views2'] = resData['views2'] === null ? 0 : resData['views2']
     resData['views3'] = resData['views3'] === null ? 0 : resData['views3']
