@@ -9,6 +9,18 @@ const authUtil = require("../../../module/utils/authUtils");
 
 const upload = require('../../../config/multer');
 
+router.get('/profile', authUtil.isLoggedin ,async (req, res) => { //프로필 사진, 이름, 채널명, 주소, 연락처 : params로 유저 인덱스 받기? no?
+    const idx = req.decoded.idx
+    const selectUserQuery = `SELECT profileImage, name, channelName FROM User WHERE userIdx = ${idx}`;
+    const selectUserResult = await db.queryParam_None(selectUserQuery);
+
+
+    if (!selectUserResult)
+        res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)) 
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.SELECT_USER_SUCCESS,  selectUserResult))
+})
+
 router.get('/', authUtil.isLoggedin ,async (req, res) => { //프로필 사진, 이름, 채널명, 주소, 연락처 : params로 유저 인덱스 받기? no?
     const idx = req.decoded.idx
     const selectUserQuery = `SELECT profileImage, phone, location FROM User WHERE userIdx = ${idx}`;

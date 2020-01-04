@@ -159,5 +159,16 @@ router.delete("/scrap", isLoggedin ,async (req, res) => {
         res.status(200).send(defaultRes.successTrue(statusCode.OK, resMessage.DELETE_USERNEWS_SUCCESS));    // 작품 삭제 성공
 });
 
+router.put("/test", async (req, res) => {
+    const {newsIdx, contents} = req.body;
+    const updateNewsQuery = `UPDATE SupportNews SET contents = ? WHERE newsIdx=?`;
+    const updateNewsResult = await db.queryParam_Arr(updateNewsQuery, [contents,newsIdx])
+    
+    if (!updateNewsResult)
+        res.status(200).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR));    // 작품 삭제 성공
+    else
+        res.status(200).send(defaultRes.successTrue(statusCode.OK, "서포트 뉴스 수정 성공"));    // 작품 삭제 성공
+});
+
 module.exports = router;
 
