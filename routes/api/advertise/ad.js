@@ -286,15 +286,15 @@ router.post('/write', authUtils.isLoggedin, async (req, res) => {
     const getWriteQuery = 'INSERT INTO Plan (title, subtitle,youtubeUrl, phone, location, planTitle, planContents, refUrl,isAgree, userIdx) VALUES(?,?,?,?,?,?,?,?,?,?)'
     const getPlanIdxQuery = `SELECT planIdx FROM Plan WHERE userIdx=${req.decoded.idx} order by planIdx DESC`
 
-    const getPlanIdxResult = await db.queryParam_None(getPlanIdxQuery);
-    const planIdx = getPlanIdxResult[0].planIdx
-
+    
     const postWriteQuery = 'INSERT INTO UserAd (userIdx, adIdx, planIdx, progress, createAt) VALUES (?,?, ?, ?,?)';
     // const getPlanQuery = `SELECT b.planIdx FROM UserAd as a JOIN Plan as b ON a.planIdx=b.planIdx WHERE a.userIdx=${req.decoded.idx} AND a.adIdx=${req.body.adIdx}`
     // console.log("getPlanQuery", getPlanQuery);
     // const getPlanQuery = `SELECT planIdx FROM Plan WHERE phone='${req.body.phone}'`;
     // const writeTransaction = await db.Transaction(async connection => {
     const getWriteResult = await db.queryParam_Arr(getWriteQuery, [req.body.title, req.body.subtitle, req.body.youtubeUrl, req.body.phone, req.body.location, req.body.planTitle, req.body.planContents, req.body.refUrl, req.body.isAgree, req.decoded.idx]);
+    const getPlanIdxResult = await db.queryParam_None(getPlanIdxQuery);
+    const planIdx = getPlanIdxResult[0].planIdx
     const postWriteResult = await db.queryParam_Arr(postWriteQuery, [req.decoded.idx, req.body.adIdx, planIdx, 1, moment().format('YYYY-MM-DD HH:mm:ss')]);
     // })
     // const getPlanResult = await db.queryParam_None(getPlanQuery);
