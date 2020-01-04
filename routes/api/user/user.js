@@ -11,9 +11,8 @@ const upload = require('../../../config/multer');
 
 router.get('/profile', authUtil.isLoggedin ,async (req, res) => { //프로필 사진, 이름, 채널명, 주소, 연락처 : params로 유저 인덱스 받기? no?
     const idx = req.decoded.idx
-    const selectUserQuery = `SELECT profileImage, name, channelName FROM User WHERE userIdx = ${idx}`;
+    const selectUserQuery = `SELECT profileImage, name, channelName, cash FROM User WHERE userIdx = ${idx}`;
     const selectUserResult = await db.queryParam_None(selectUserQuery);
-
 
     if (!selectUserResult)
         res.status(600).send(defaultRes.successFalse(statusCode.DB_ERROR, resMessage.DB_ERROR)) 
